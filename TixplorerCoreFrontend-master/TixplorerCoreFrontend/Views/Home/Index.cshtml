@@ -1,0 +1,137 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@*    <div id="list-example" class="list-group listleft d-none d-xl-block">
+        <a class="list-group-item list-group-item-action" href="#list-item-1">最頂端</a>
+        <a class="list-group-item list-group-item-action" href="#list-item-2">超值優惠</a>
+        <a class="list-group-item list-group-item-action" href="#list-item-3">限時優惠</a>
+        <a class="list-group-item list-group-item-action" href="#list-item-4">認識我們</a>
+        <a class="list-group-item list-group-item-action" href="#list-item-5">合作夥伴</a>
+    </div>*@
+<main>
+    <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" class="scrollspy-example" tabindex="0">
+        <div class="col mb-5 mx-0 mt-0">
+
+            <!--HomePic圖片來源自10wallpaper.com-->
+            <div id="carouselExampleAutoplaying" class="carousel slide tidy HomeSearch mb-3" data-bs-ride="carousel">
+                <div class="top-layer d-xl-block">
+                    <h1 class="text-light">擇你所愛</h1>
+                    <h3 class="text-light">尋覓台灣的各個美好角落 立即尋找</h3>
+                    <div class="d-flex" role="search">
+                        <input class="form-control me-2 searchTextType" id="Searchtxt" type="search" placeholder="快點搜尋想去的地方！" aria-label="Search">
+                        <input type="button" class="btn btn-outline-success bg-info text-light searchTextType" value="搜尋" onclick="doSearch()">
+                    </div>
+                </div>
+                <div id="carouselIndicators" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="images/HomePic1.png" class="d-block w-100 HomePic" alt="" style="margin:0px">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="images/HomePic2.png" class="d-block w-100 HomePic" alt="" style="margin:0px">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="images/HomePic3.png" class="d-block w-100 HomePic" alt="" style="margin:0px">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="images/HomePic4.png" class="d-block w-100 HomePic" alt="" style="margin:0px">
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying"
+                            data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying"
+                            data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row mx-auto mb-5">
+                    <div class="col SearchLogo shadow mx-2">
+                        <a type="button" href="/Search?productType=1&productCondition=0">
+                            <img class="SearchLogoImg" src="images/ActiveLogo.png" />
+                        </a>
+                    </div>
+                    <div class="col SearchLogo shadow mx-2">
+                        <a type="button" href="/Search?productType=1&productCondition=1">
+                            <img class="SearchLogoImg" src="images/AttractionLogo.png" />
+                        </a>
+                    </div>
+                    <div class="col SearchLogo shadow mx-2">
+                        <a type="button" href="/Search?productType=1&productCondition=2">
+                            <img class="SearchLogoImg" src="images/HotelLogo.png" />
+                        </a>
+                    </div>
+                    <div class="col SearchLogo shadow mx-2">
+                        <a type="button" href="/Search?productType=1&productCondition=3">
+                            <img class="SearchLogoImg" src="images/RestaurantLogo.png" />
+                        </a>
+                    </div>
+                </div>
+                @*            <div class="row">
+                <div class="col">
+                <h1>推薦活動 <button class="btn btn-primary float-end">查看更多>>></button></h1>
+                </div>
+                </div>
+                <div id="RecommendActivities" class="row mb-3">
+                </div>*@
+            </div>
+        </div>
+        @*    <div class="container-fluid fixed-bottom bg-danger alert" style="height: 120px;">
+        <button type="button" class="close close-button" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+        <div class="d-flex justify-content-center  text-align-center">
+        <h1>我是廣告</h1>
+        </div>
+        </div>*@
+</main>
+
+@section Scripts {
+    <script>
+        function doSearch() {
+            const SearchStr = $("#Searchtxt").val()
+            location.href = `/Search?txtKeyword=${SearchStr}`
+        }
+
+                //async function findRecommendActivities() {
+                //    //建立推薦商品資料
+                //    const response = await fetch(`/search/getProductDatas?productType=1&productCondition=0`)
+                //    const datas = await response.json()
+                //    console.log(datas)
+                //    //建立商品內容卡片
+
+                //    for (let i = 0; i < 4; i++) {
+                //        const randomNum = Math.floor(Math.random() * datas.length);
+                //        const newCardContent = $('<div>').addClass('col').append(
+                //            $('<div>').addClass('card restaurant-card').append(
+                //                $('<img>').attr('src', 'https://jameshsu0407.github.io/img/main/JS.png').addClass('card-img-top').css({ height: '250px', width: '100%', 'object-fit': 'cover' }),
+                //                $('<div>').addClass('card-body').append(
+                //                    $('<h5>').addClass('card-title restaurant-card-title').text(datas[randomNum].productName),
+                //                    //記住id並隱藏
+                //                    $('<p>').addClass('card-id').text(datas[randomNum].productId).hide(),
+                //                    $('<p>').html('<span class="card-price">' + datas[randomNum].productPrice + '</span></p>'),
+                //                    $('<p>').html('價格：<span class="card-price">' + datas[randomNum].productPrice + '</span></p>'),
+                //                    $('<a>').attr('href', `${MVCurl}` + 'Ticket/ticket/' + datas[randomNum].productId).attr('target', '_blank').addClass('btn btn-primary').css('margin-right', '20px').text('瀏覽票券'),
+                //                    $('<button>').attr('data-restaurantcard-index', i).addClass('restaurant-btn-save btn btn-secondary').text('選擇')
+                //                )
+                //            )
+                //        );
+                //        $('#RecommendActivities').append(newCardContent);
+                //    }
+                //};
+
+                //window.addEventListener('load', function(){
+                //    findRecommendActivities();
+                //})
+
+
+    </script>
+
+
+}
+

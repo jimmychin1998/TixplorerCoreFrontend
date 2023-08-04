@@ -1,0 +1,240 @@
+.autoright {
+  margin-left: auto;
+}
+
+.top-layer {
+  position: absolute;
+  top: 30%;
+  z-index: 9998;
+}
+footer {
+  /* position: absolute; */
+  position: sticky;
+  width:100%;
+  top: 100vh;
+}
+.navbarHome {
+  background-color: #AEC670
+}
+.navbar {
+  z-index: 9999;
+}
+.HomeImgFrame {
+  width: 100%;
+  height: 35%;
+  margin: 0px;
+  padding: 0px;
+}
+.HomePic{
+  margin:0px;
+  padding:0px;
+}
+.listleft {
+  position: sticky;
+  top: 40%;
+  float: right;
+  transform: translateY(-50%);
+  text-align: center;
+}
+
+.carousel-item img {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: space-around;
+  margin: 10px;
+}
+
+.carousel-item .col-md-4 {
+  padding: 0;
+}
+
+  .carousel-item .col-md-4 img {
+      width: 100%;
+      height: auto;
+      cursor: pointer;
+  }
+
+.tidy {
+  display: flex;
+  justify-content: center;
+}
+
+  .tidy img {
+      max-width: 100%;
+      height: auto;
+  }
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+html {
+font-size: 14px;
+}
+
+@media (min-width: 768px) {
+html {
+  font-size: 16px;
+}
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+.SearchLogo {
+  border-radius: 15%;
+  border: 1px solid lightgray;
+}
+.SearchLogo:hover {
+  border-radius: 15%;
+  border: 2px solid gray;
+}
+.SearchLogoImg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 15%;
+}
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+/*  margin-bottom: 60px;*/
+position:relative;
+}
+@media (max-width: 768px) {
+
+  .top-layer {
+      /*display: none;*/
+      top: 10%;
+  }
+
+  .tidy img {
+      max-width: 100%;
+      height: 83%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+
+  /* 在中等屏幕下應用中等大小的文字和按鈕 */
+  h1 {
+      font-size: 25px;
+  }
+
+  h3 {
+      font-size: 15px;
+  }
+
+  button[type="submit"] {
+      width: 100px;
+      height: 40px;
+  }
+
+  input[type="text"] {
+      width: 100px;
+      height: 40px;
+  }
+
+  .top-layer {
+      position: absolute;
+      top: 10%;
+      /*left: 53%;*/
+      z-index: 9998;
+  }
+}
+
+
+@media (min-width: 992px) and (max-width: 1200px) {
+
+  /* 在更大等屏幕下應用中等大小的文字和按鈕 */
+  h1 {
+      font-size: 30px;
+  }
+
+  h3 {
+      font-size: 20px
+  }
+
+  button[type="submit"] {
+      width: 100px;
+      height: 40px;
+  }
+
+  input[type="text"] {
+      width: 200px;
+      height: 30px;
+  }
+
+  .top-layer {
+      position: absolute;
+      top: 25%;
+      /*left: 53%;*/
+      z-index: 9998;
+  }
+}
+
+@media (min-width: 1200px) and (max-width: 1400px) {
+
+  /* 在中等屏幕下應用中等大小的文字和按鈕 */
+  h1 {
+      font-size: 40px;
+  }
+
+  h3 {
+      font-size: 25px;
+  }
+
+  button[type="submit"] {
+      width: 100px;
+      height: 40px;
+  }
+
+  input[type="text"] {
+      width: 200px;
+      height: 30px;
+  }
+
+  .top-layer {
+      position: absolute;
+      top: 27%;
+      /*left: 53%;*/
+      z-index: 9998;
+  }
+}
+
+@media (min-width: 1400px) {
+
+  /* 在超及無敵大屏幕下應用超級大小的文字和按鈕 */
+  h1 {
+      font-size: 50px;
+  }
+
+  h3 {
+      font-size: 30px;
+  }
+
+  button[type="submit"] {
+      width: 100px;
+      height: 40px;
+  }
+
+  input[type="search"] {
+      width: 300px;
+      height: 40px;
+  }
+
+  .top-layer {
+      position: absolute;
+      top: 25%;
+      /*left: 53%;*/
+      z-index: 9998;
+  }
+}

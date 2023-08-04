@@ -1,0 +1,519 @@
+﻿@model TixplorerCoreFrontend.ViewModels.SearchViewModel
+
+@{
+    ViewData["Title"] = "Search";
+}
+@section Styles{
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .searchBtn {
+            width: 60px;
+        }
+
+        .tixplorerCard {
+            width: 196px;
+            height: 240px;
+            border: 1px solid #000;
+            border-radius: 10px;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .card-style {
+            position: relative;
+            text-decoration: none;
+        }
+
+        .imgcontainer {
+            /*position: relative;*/
+            width: 100%;
+            height: 40%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .card-content {
+            position: absolute;
+            height: 60%;
+        }
+
+        .card-info {
+            position: relative;
+            height: 100%;
+        }
+
+        .card-info-top {
+            margin: 0px;
+            color: black;
+            height: 60%
+        }
+
+        .card-info-bottom {
+            margin: 0px;
+            color: black;
+            height: 40%
+        }
+
+            .card-info-top h4,
+            .card-info-bottom h4 {
+                font-weight: bold;
+            }
+
+        .tixplorerPic {
+            /*position: relative;*/
+            max-width: 100%;
+            object-fit: contain;
+            /*max-height: 100%;
+                            background-color: blue;
+                /*            border-top-left-radius: 10px;
+                            border-top-right-radius: 10px;*/
+        }
+
+        .typeCondition {
+            width: 100%;
+            border: 1px solid #000;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .productTitle {
+            font-weight: bolder;
+            /*以下為固定文字不可超過兩行*/
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .dropdownList {
+            height: 52px;
+            border: 1px solid lightgray;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .searchitem {
+            border: 1px solid lightgray;
+            border-radius: 8px;
+        }
+
+        .searchArea {
+            border-bottom: 1px solid lightgray;
+        }
+
+        .quickSearchTitle {
+            background-color: #c7d3bf;
+            border-bottom: 1px solid black;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .ClassHeader {
+            background-color: #AEC09A;
+            padding-left: 10%;
+        }
+
+        .TripClassItem, .CountyClassItem {
+            position: relative;
+            padding-left: 15%;
+            padding-top: 5%;
+            padding-bottom: 5%;
+            border: 1px solid lightgray;
+        }
+
+            .TripClassItem:hover, .CountyClassItem:hover {
+                background-color: lightblue;
+            }
+
+        .discountpriceText {
+            font-weight: bold;
+            color: red;
+        }
+
+        .priceText {
+            font-weight: bold;
+        }
+
+        .priceTextDel {
+            font-weight: bold;
+            text-decoration: line-through;
+        }
+    </style>
+    }
+<main class="mb-3">
+    <div class="mt-0 mb-3">
+        <img src="images/TakeTripLogo.png" class="d-block w-100 HomePic" alt="" style="margin:0px"> <!--圖源來自pngtree-->
+    </div>
+    <div class="container align-center" id="app">
+        <div class="row mb-2">
+            <div class="col-2"></div>
+            <div class="col-10 d-flex justify-content-between mb-3 searchArea">
+                <span class="mb-3">
+                    <select name="productType" id="productType" class="dropdownList searchitem mx-2" @@change="conditionGen(`${typeValue}`)" v-model="typeValue">
+                        <option name="productType" v-for="slectedType in productType">{{ slectedType }}</option>
+                    </select>
+                    <select v-if="`${typeValue}` != '不選擇'" name="productCondition" id="productCondition" class="dropdownList searchitem mx-2" v-model="conditionValue">
+                        <option name="productCondition" v-for="slectedCondition in productCondition">{{ slectedCondition }}</option>
+                    </select>
+                    <input type="text" name="txtKeyword" v-model="txtKeyword" class="mx-2 searchitem" placeholder="請輸入搜尋文字" style="height:52px">
+                    <input type="button" value="搜尋" class="btn searchBtn bg-info bg-gradient border border-dark-subtle" style="height:52px" @@click="showProducts(`${typeValue}`, `${conditionValue}`, `${txtKeyword}`)" />
+                </span>
+                <nav class="mx-3 mt-2">
+                    <ul class="pagination">
+                        <li class="page-item disabled" id="pagePrevious">
+                            <a class="page-link" href="javascript:void(0)" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item" :id=`page${pageNum}` v-for="pageNum in pageArray" @@click="pageSelect(`${pageNum}`)">
+                            <a class="page-link" href="javascript:void(0)">{{ pageNum }}</a>
+                        </li>
+                        @*                            <li class="page-item">
+                        <a class="page-link" href="javascript:void(0)">2</a>
+                        </li>
+                        <li class="page-item">
+                        <a class="page-link" href="javascript:void(0)">3</a>
+                        </li>*@
+                        <li class="page-item" id="pageNext">
+                            <a class="page-link" href="javascript:void(0)">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            @*                <div class="col-2">
+            <div class="d-block typeCondition shadow-lg">
+            <div class="d-flex justify-content-sm-center quickSearchTitle">
+            <div class="mt-2 mb-2">快速搜尋</div>
+            </div>
+            <ul>
+            <li>
+            <span>旅遊類別</span>
+            <ul>
+            <li>活動</li>
+            <li>景點</li>
+            <li>飯店</li>
+            <li>餐廳</li>
+            </ul>
+            </li>
+            </ul>
+            <ul>
+            <li>
+            <span>縣市</span>
+            <ul>
+            <li>台北</li>
+            <li>台中</li>
+            <li>高雄</li>
+            </ul>
+            </li>
+            </ul>
+            </div>
+            </div>*@
+            <div class="col-2">
+                <div class="d-block typeCondition shadow-lg">
+                    <div class="d-flex justify-content-sm-center quickSearchTitle">
+                        <div class="mt-2 mb-2">快速搜尋</div>
+                    </div>
+                    <div class="accordion" id="accordionQuickSearchTripClass">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button ClassHeader" type="button" data-bs-toggle="collapse" data-bs-target="#TripClass" aria-expanded="true" aria-controls="accordionQuickSearchTripClass" style="border-radius:0px">
+                                    旅遊類別
+                                </button>
+                            </h2>
+                            <div id="TripClass" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div type="button" :id=`Trip${index}` class="accordion-body TripClassItem" v-for="(TripClassItem,index) in TripClassItems" @@click="quickSearch(`Trip${index}`)">{{ TripClassItem }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion" id="accordionQuickSearchCountyClass">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button ClassHeader collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#CountyClass" aria-expanded="false" aria-controls="accordionQuickSearchCountyClass" style="border-radius:0px;">
+                                    縣市
+                                </button>
+                            </h2>
+                            <div id="CountyClass" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div type="button" :id=`County${index}` class="accordion-body CountyClassItem" v-for="(CountyClassItem,index) in CountyClassItems" @@click="quickSearch(`County${index}`)">{{ CountyClassItem }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-10" id="productArea">
+                <div class="tixplorerCard float-start mx-2 mb-3 col shadow" v-for="productCard in productCards">
+                    <a type="button" class="card-style" @@click="toHref(`${productCard.productId}`)">
+                        <div class="card-img imgcontainer">
+                            <img class="d-block tixplorerPic mx-auto" :src=`${productCard.productImage}`
+                                 @@error="e => { e.target.src = defaultImg }" />
+                        </div>
+                        <div class="card-content">
+                            <div class="d-flex card-info flex-column align-content-between">
+                                <div class="card-info-top mb-3">
+                                    <div class="productTitle mx-2">{{ productCard.productName }}</div>
+                                    <div class="mx-2">{{ productCard.productCounty }}</div>
+                                </div>
+                                <div class="card-info-bottom d-flex flex-column align-items-start ">
+                                    <div v-if="productCard.productDiscount != '0'" class="discountpriceText mx-2">價格：{{ productCard.productDiscount }}</div>
+                                    <div v-if="productCard.productDiscount != '0'" class="priceTextDel mx-2">價格：{{ productCard.productPrice }}</div>
+                                    <div v-if="productCard.productDiscount == '0'" class="priceText mx-2">價格：{{ productCard.productPrice }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts{
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        //const { createApp, ref } = Vue
+
+        Vue.createApp({
+            data() {
+                return {
+                    txtKeyword: '',
+                    productCards: [],
+                    productType: ['不選擇', '縣市', '旅遊類別'],
+                    productCondition: [''],
+                    typeValue: '不選擇',
+                    conditionValue: '',
+                    thepage: 1, //預設產品分頁為第1頁
+                    pageArray: [],
+                    Productdatas: [],
+                    TripClassItems: ['活動', '景點', '飯店', '餐廳'],
+                    CountyClassItems: ['臺北市', '新北市', '桃園市', '臺中市', '臺南市', '高雄市', '宜蘭縣', '新竹縣', '苗栗縣', '彰化縣', '南投縣', '雲林縣', '嘉義縣', '屏東縣', '花蓮縣', '臺東縣', '澎湖縣', '基隆市', '新竹市', '嘉義市', '金門縣', '馬祖縣', '連江縣'],
+                    defaultImg: 'images/NoImage.png',
+                    TotalPage: '',
+
+                };
+            },
+            methods: {
+                //產生產品卡片事件
+                async showProducts(typeValue, conditionValue, txtKeyword) {
+                    if (@Model.productType) {
+                        switch (@Model.productType) {
+                            case 1:
+                                this.typeValue = "旅遊類別";
+                                typeValue = "旅遊類別"
+                                break;
+                            case 2:
+                                this.typeValue = "縣市";
+                                typeValue = "縣市"
+                                break;
+                            default:
+                                this.typeValue = "不選擇";
+                                typeValue = "不選擇"
+                                break;
+                        }
+                    }
+                    this.conditionGen(typeValue)
+                    if (@Model.productCondition) {
+                        switch (@Model.productCondition) {
+                            //產品搜尋類別為「旅遊類別」時
+                            case 1:
+                                this.conditionValue = "景點";
+                                conditionValue = "景點"
+                                break;
+                            case 2:
+                                this.conditionValue = "飯店";
+                                conditionValue = "飯店"
+                                break;
+                            case 3:
+                                this.conditionValue = "旅館";
+                                conditionValue = "旅館"
+                                break;
+                            default:
+                                //條件為「活動」時
+                                this.conditionValue = "活動";
+                                conditionValue = "活動"
+                                break;
+                        }
+                    }
+                    //轉換HTML REF編碼$#x
+                    const strkeyword = (`@Model.txtKeyword`).toString().replace(/&#x([a-zA-Z0-9]+);{0,1}/g, (substring, $1) => { return "%u" + $1 })
+                    if (strkeyword) {
+                        this.txtKeyword = unescape(strkeyword);
+                        txtKeyword = unescape(strkeyword);
+                    }
+
+                    //if(@ViewBag.txtKeyword != null){
+                    //    this.txtKeyword = @ViewBag.txtKeyword
+                    //}
+                    const response = await fetch(`/search/getProductDatas?productType=${typeValue}&productCondition=${conditionValue}&txtKeyword=${txtKeyword}`)
+                    console.log(response)
+                    this.Productdatas = await response.json()
+
+                    //移除原本頁數的已選擇提示
+                    if (document.getElementById('page' + this.thepage) != null)
+                        document.getElementById('page' + this.thepage).removeAttribute('class', 'active')
+                    //搜尋後，設定產品顯示初始值
+                    this.setDefaultPage(this.Productdatas)
+                    //顯示產品卡片資料
+                    this.displayCards(this.Productdatas)
+
+                    this.$nextTick(() => document.getElementById('page' + this.thepage).setAttribute('class', 'active'))
+
+                },
+                displayCards(datas) {
+                    //先清空產品卡片
+                    this.productCards = []
+
+                    //當前設定一次顯示10筆資料
+                    for (let i = 10 * (this.thepage - 1); i < datas.length; i++) {
+                        if (i >= 10 * (this.thepage - 1) + 10) {
+                            break;
+                        } else {
+                            const products = {
+                                productId: '',
+                                productName: '',
+                                productImage: '',
+                                productCounty: '',
+                                productPrice: '',
+                                productDiscount: ''
+                            }
+                            products.productId = datas[i].productId
+                            products.productName = datas[i].productName
+                            products.productImage = 'images/' + datas[i].productImage
+                            products.productCounty = datas[i].productCounty
+                            products.productPrice = datas[i].productPrice
+                            products.productDiscount = datas[i].productDiscount
+                            this.productCards.push(products)
+                        }
+                    }
+                },
+                //若有選擇搜尋的產品Type，則根據選擇產生不同的子選擇
+                conditionGen(typeValue) {
+                    switch (typeValue) {
+                        case '縣市':
+                            if (this.conditionValue == '')
+                                this.conditionValue = '臺北市'
+                            this.productCondition = ['臺北市', '新北市', '桃園市', '臺中市', '臺南市', '高雄市', '宜蘭縣', '新竹縣', '苗栗縣', '彰化縣', '南投縣', '雲林縣', '嘉義縣', '屏東縣', '花蓮縣', '臺東縣', '澎湖縣', '基隆市', '新竹市', '嘉義市', '金門縣', '馬祖縣', '連江縣']
+                            break;
+                        case '旅遊類別':
+                            if (this.conditionValue == '')
+                                this.conditionValue = '活動'
+                            this.productCondition = ['活動', '景點', '飯店', '餐廳']
+                            break;
+                        default:
+                            this.productCondition = []
+                            break;
+                    }
+                },
+                //選擇產品分頁
+                pageSelect(pageNum) {
+                    //如果在換分頁前，當前分頁為1時，當改變分頁後，讓「上一頁」功能可以使用
+                    if (this.thepage == 1) {
+                        document.getElementById('pagePrevious').removeAttribute('class', 'disabled')
+                    }
+                    //如果在換分頁前，當前分頁為最大值時，當改變分頁後，讓「下一頁」功能可以使用
+                    if (this.thepage == Math.floor(this.Productdatas.length / 10) + 1) {
+                        document.getElementById('pageNext').removeAttribute('class', 'disabled')
+                    }
+                    //換分頁前，先移除當前有提示的標籤提示
+                    document.getElementById('page' + this.thepage).removeAttribute('class', 'active')
+
+                    //改變當前分頁為選擇的值
+                    this.thepage = pageNum
+
+                    ////重新設定可選分頁
+                    //this.setPagination()
+
+                    //如果在換分頁後，換到分頁為1時，讓「上一頁」功能無法使用
+                    if (this.thepage == 1) {
+                        document.getElementById('pagePrevious').setAttribute('class', 'disabled')
+                    }
+                    //如果在換分頁後，換到分頁為最大值時，讓「下一頁」功能可以使用
+                    if (this.thepage == Math.floor(this.Productdatas.length / 10) + 1) {
+                        document.getElementById('pageNext').setAttribute('class', 'disabled')
+                    }
+                    document.getElementById('page' + this.thepage).setAttribute('class', 'active')
+
+                    this.displayCards(this.Productdatas)
+
+                    //改變分頁結構，一次最多顯示5頁
+                },
+                setDefaultPage(datas) {
+                    this.thepage = 1
+                    this.TotalPage = Math.floor(datas.length / 10) + 1
+                    switch (this.TotalPage) {
+                        case 1:
+                            this.pageArray = [1]
+                            break;
+                        case 2:
+                            this.pageArray = [1, 2]
+                            break;
+                        case 3:
+                            this.pageArray = [1, 2, 3]
+                            break;
+                        case 4:
+                            this.pageArray = [1, 2, 3, 4]
+                            break;
+                        default:
+                            this.pageArray = [1, 2, 3, 4, 5]
+                            break;
+                    }
+                },
+                //setPagination() {
+                //    console.log(this.TotalPage)
+                //    console.log(parseInt(thepage) - 2)
+                //    if (this.TotalPage > 5 && this.thepage > this.pageArray[2]) {
+
+
+                //        if (parseInt(this.thepage) + 2 <= this.TotalPage)
+                //            this.pageArray = [parseInt(this.thepage) - 2, parseInt(this.thepage) - 1, thepage, parseInt(this.thepage) + 1, parseInt(this.thepage) + 2]
+                //    }
+                //    else if (this.TotalPage > 5 && thepage < this.pageArray[2]) {
+                //        if (parseInt(this.thepage) - 1 >= 0)
+                //            this.pageArray = [thepage, parseInt(this.thepage) + 1, parseInt(this.thepage) + 2, parseInt(this.thepage) + 3, parseInt(this.thepage) + 4]
+                //        if (parseInt(this.thepage) - 2 >= 0)
+                //            this.pageArray = [parseInt(this.thepage) - 1, thepage, parseInt(this.thepage) + 1, parseInt(this.thepage) + 2, parseInt(this.thepage) + 3]
+                //    }
+                //    console.log(thepage)
+                //    console.log(this.pageArray)
+                //},
+                quickSearch(htmlId) {
+                    switch (htmlId) {
+                        case 'Trip0':
+                            this.showProducts('旅遊類別', '活動', '')
+                            break;
+                        case 'Trip1':
+                            this.showProducts('旅遊類別', '景點', '')
+                            break;
+                        case 'Trip2':
+                            this.showProducts('旅遊類別', '飯店', '')
+                            break;
+                        case 'Trip3':
+                            this.showProducts('旅遊類別', '餐廳', '')
+                            break;
+                        default:
+                            break;
+                    }
+                },
+                setDefaultImg(e) {
+                    e.target.src = defaultImg
+                },
+                toHref(Id) {
+                    //建立連至商品頁面的連結
+                    location.href = `/Ticket/ticket?id=${Id}`
+                },
+            },
+            computed: {
+
+            },
+            mounted() {
+                //載入畫面時執行一次產生產品卡片事件
+                this.showProducts(this.typeValue, this.conditionValue, this.txtKeyword)
+            },
+        }).mount("#app");
+    </script>
+
+}

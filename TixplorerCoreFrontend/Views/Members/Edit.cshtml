@@ -1,0 +1,615 @@
+﻿@using TixlorerCore.Models;
+@model TixplorerCoreFrontend.Models.DTO.memberEditVM
+
+@{
+    string EditMemberAddress = GlobalVar.MVCurl+"Members/Edit";
+    string OrderAddress = GlobalVar.SPAurl + "order";
+    string MyCouponAddress = GlobalVar.SPAurl + "CouponList";
+    string FAQAddress = GlobalVar.SPAurl + "problem";
+    string MyFavoriteAddress = "/Members/myFavorite";
+    string EditPwdAddress = GlobalVar.MVCurl + "members/editPassword";
+}
+
+@section Styles{
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+}
+<head>
+    <style>
+
+        /*inputBox的邊框變成弧線*/
+        .rounded-input {
+            border-radius: 20px; /* 設定邊框弧度 */
+            border: 1px solid #ccc; /* 可以加上邊框以便更清楚地看到效果 */
+            padding: 5px; /* 加一點內邊距 */
+            height: 20px;
+            text-align: center;
+        }
+
+        .rounded-input:hover {
+            border-radius: 20px; /* 設定邊框弧度 */
+            border: 1px solid #ccc; /* 可以加上邊框以便更清楚地看到效果 */
+            padding: 5px; /* 加一點內邊距 */
+            height: 20px;
+            text-align: center;
+                background-color: #E0E0E0;
+                box-shadow: 8px 8px 13px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-label {
+            margin-left: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #F0F0F0;
+            border-radius: 10px;
+            width: 85px;
+            margin-top: 10px;
+        }
+
+        .custom-label:hover {
+                margin-left: 15px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #B0B0B0;
+                border-radius: 10px;
+                width: 85px;
+                margin-top: 10px;
+            box-shadow:  8px 8px 13px  rgba(0, 0, 0, 0.1);
+            
+
+        }
+
+        .table-04 tr th {
+            vertical-align: middle;
+        }
+
+        .modal-dialog {
+            max-width: 40%; /*模塊窗(修改密碼)寬度*/
+        }
+
+        .modal-footer {
+            justify-content: center;  /*模塊窗內容置中*/
+            border: none;
+        }
+
+        #account {
+            display: flex;
+            align-items: center;
+            height: 100%; /* 設置高度以確保內容垂直居中 */
+        }
+
+        .profile-container {
+            display: flex;
+            align-items: center;
+            background-color: #f0f5ff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .nav-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            margin-left: 20px;
+        }
+
+            .nav-list li {
+                padding: 10px 16px;
+                border-radius: 20px;
+                background-color: #f0f5ff;
+                color: #555;
+                cursor: pointer;
+                transition: background-color 0.2s ease, color 0.2s ease;
+                font-weight: bold;
+                line-height: 1.5;
+                border: 1px solid black;
+                margin-bottom: 10px;
+                /* 設定行高，避免文字過於疊加 */
+            }
+
+                .nav-list li:hover {
+                    background-color: #86c3ff;
+                    color: white;
+                }
+
+        .router-link-active {
+            color: red;
+        }
+
+        .align-middle {
+            vertical-align: middle;
+        }
+
+        .rounded-table {
+
+            border-radius: 10px; /* 圓角大小 */
+        }
+
+            .rounded-table tr:first-child th:first-child {
+                border-top-left-radius: 10px;
+            }
+
+            .rounded-table tr:first-child th:last-child {
+                border-top-right-radius: 10px;
+            }
+
+            .rounded-table tr:last-child td:first-child {
+                border-bottom-left-radius: 10px;
+            }
+
+            .rounded-table tr:last-child td:last-child {
+                border-bottom-right-radius: 10px;
+            }
+    </style>
+
+</head>
+<main class="mt-5 mb-5">
+    <div class="container">
+        <div class="row">
+            <h1 class="text-center">會員資料</h1>
+            <hr>
+            <div class="col-2">
+                <div class="profile-container" >
+
+                    <ul class="nav-list">
+                        <h4 class="text-center">Hi~@Model.Name</h4>
+                        <h6 class="text-center">您目前的點數：</h6>
+                        <h6 class="text-center"><strong>@Model.BonusPoint</strong>點</h6>
+
+                        <a href=@EditMemberAddress>
+                        <li><i class="bi bi-person-circle"></i>會員資料</li></a>
+                        @*<li><i class="bi bi-people-fill"></i>會員修改</li>*@
+                        <hr>
+                        <a href=@OrderAddress>
+                        <li><i class="bi bi-clipboard-fill"></i>訂單管理</li></a>
+                        <a href=@MyFavoriteAddress>
+                        <li><i class="bi bi-person-heart" style="color: pink"></i>我的最愛</li>
+                        <li><i class="bi bi-box-arrow-left"></i>管理登入</li>
+                        <li><i class="bi bi-credit-card-2-back-fill" style="color: blue;"></i>付款資料</li>
+                        <li><i class="bi bi-shop-window" style="color: yellowgreen;"></i>積分商店</li>
+                        <a href=@MyCouponAddress>
+                        <li><i class="bi bi-ticket-detailed" style="color: green;"></i>我的優惠券</li></a>
+                        <li><i class="bi bi-database-check"></i>積分管理</li>
+                        <li><i class="bi bi-envelope-fill"></i>發問問題</li>
+                        <hr>
+                        <a href=@FAQAddress>
+                        <li><i class="bi bi-chat-square-text-fill"></i>常見問題</li></a>
+                        <li><i class="bi bi-box-arrow-right"></i>登出</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <form name="form" method="POST" asp-action="Edit" id="form" class="container d-flex justify-content-center align-items-center">
+                    @*<form name="form" method="POST" action="@Url.Action("Edit", "Members")" id="form" class="container d-flex justify-content-center align-items-center">*@
+
+                    <div class="mb-2 clearfix">
+
+                        <!-- table- -->
+                        <div class="mod modify-data clearfix">
+                            <div class="table-wrapper mx-3">
+                                <table class="table table-bordered rounded-3">
+                                    <thead class="table-info" >
+                                        <tr>
+                                            <th colspan="4" style="text-align: center; " class="table-with-border">
+                                                <h3 style="display: inline; "><span>資料編輯</span></h3>
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <input type="hidden" id="MId" name="MId" value="@Model.MId" /> @*DTO檢查用*@
+                                        <tr>
+                                            <th class="align-middle">密碼<br />Password</th>
+
+                                            <th class="align-middle" style="vertical-align: middle;">
+
+                                                <input type="password" class="rounded-input" style="width: 150px; height:30px;" id="MPwd" value="@Model.Password" disabled />
+                                                <div class="form-check form-switch text-start" style="text-align:right;">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="switchPwd" style="width: 40px; height: 20px; margin-top:2px;">
+                                                    <label class="form-check-label text-center custom-label row align-items-center" for="switchPwd" style="margin-left: 25px; ">顯示密碼</label>
+                                                </div>
+                                            </th>
+                                            <th class="text-center align-middle">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-target="#staticBackdrop" onclick="sendPwdToMaill()">
+                                                    忘記密碼
+                                                </button>
+                                            </th>
+                                            <th class="text-center align-middle">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                                    修改密碼
+                                                </button>
+                                            </th>
+                                            <input type="hidden" id="Password" name="Password" value="@Model.Password" />@*vm檢查用
+                                        </tr>
+                                        <tr>
+                                            <th>生日<br />Birthday</th>
+                                            <th class="align-middle " colspan="3" style="width: 200px; height:50px; font-size: 22px;">@Model.Birthday</th>
+                                            <input type="hidden" id="Birthday" name="Birthday" value="@Model.Birthday" />@*vm檢查用*@
+                                        </tr>
+                                        <tr>
+
+                                            <th class="align-middle">
+                                                姓名/性別<br />Name/Gender
+                                            </th>
+                                            <th class="Name">
+                                                <input type="text"
+                                                       id="Name"
+                                                       name="Name"
+                                                       class="input rounded-input mt-1"
+                                                       maxlength="15"
+                                                       value="@Model.Name"
+                                                       style="width: 150px; height:40px; font-size: 22px;"
+                                                       onchange="changeValue(this.id)" />
+                                            </th>
+                                           
+                                            <th class="align-middle" colspan="2">
+                                                <input type="radio"
+                                                       id="radio-male"
+                                                       name="Sex"
+                                                       value="0"
+                                                @(Model.Sex == 0 ? "checked" : "") />
+                                                <label for="radio-male">男</label>
+                                                <input type="radio"
+                                                       id="radio-female"
+                                                       name="Sex"
+                                                       value="1"
+                                                @(Model.Sex == 1 ? "checked" : "") />
+                                                <label for="radio-female">女</label>
+                                                <input type="radio"
+                                                       id="radio-n"
+                                                       name="Sex"
+                                                       value="2"
+                                                @(Model.Sex != 0 && Model.Sex != 1 ? "checked" : "") />
+                                                <label for="radio-n">暫不提供</label>
+
+                                                <p class="err" id="name_notice" style="display:none"></p>
+                                                <input type="text" id="Sex" name="Sex" value="@Model.Sex" style="display:none" />
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th class="align-middle">電子郵件<br />E-Mail</th>
+                                            @*<th colspan="3" class="align-middle" style="width: 200px; height:50px; font-size: 22px;">@Model.Email</th> 簡易版*@
+                                            <input type="hidden" id="Email" name="Email" value="@Model.Email" />  
+                                            <th>
+                                                  <input type="email" readonly class="form-control border-success" id="exampleFormControlInput1" value="@Model.Email" disabled">
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th class="align-middle">行動電話<br />Mobile</th>
+                                            <th colspan="3" class="align-middle" style="width: 200px; height:50px; font-size: 22px;">@Model.Phone</th>
+                                            <input type="hidden" id="Phone" name="Phone" value="@Model.Phone" />
+                                        </tr>
+                                        <tr>
+                                            <th class="align-middle">聯絡地址<br />Location</th>
+                                            <td colspan="3" class="radio align-middle">
+
+                                                <div style="position:relative ;top: 10px">
+                                                    <input type="text"
+                                                           id="Address"
+                                                           name="Address"
+                                                           class="input rounded-input"
+                                                           maxlength="15"
+                                                           value="@Model.Address"
+                                                           style="width: 400px; height: 50px;  height:50px; font-size: 22px;"
+                                                           onchange="changeValue(this.id)" />
+                                                    <p style="color: gray">
+                                                        本地址將作為您日後購物預設寄送地址，請勿填寫郵政信箱
+                                                    </p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <td>
+                                <div class="d-flex justify-content-center">
+                                    <input type="submit" onclick="return confirmSave();" class="btn btn-success me-3" value="儲存">
+                                    @Html.ActionLink("離開", "Index", "Home", new { }, new { @class = "btn btn-secondary d-flex justify-content-center" })
+
+                                </div>
+                            </td>
+                        </div>
+                        <!-- table- end -->
+                    </div>
+                    <!--mod end-->
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="height:400px;">
+                <div class="modal-header">
+                    <h5 class="modal-title container text-center" id="staticBackdropLabel">修改密碼</h5>
+                    @*<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>  //不知道做什麼*@
+                </div>
+                <div class="modal-body">
+                    <form action="@EditPwdAddress" method="post" class="container d-flex justify-content-center align-items-center">
+                        <table class="table table-sm   container text-center">
+                            <tr>
+                                <td>
+                                    帳號: @Model.Email
+                                </td>
+                            </tr>
+                            <td>
+                                請輸入舊密碼:
+                                <input type="password" id="oldPwd" class="rounded-input" name="oldPwd" />
+                            </td>
+                            <tr>
+                                <td>
+                                    請輸入欲修改的新密碼:
+                                    <input type="password" id="newPwd"  name="newPwd" class="rounded-input"   />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    請輸入第二次確認新密碼:
+                                    <input type="password" id="checkPwd" name="checkPwd"  class="rounded-input" ; />
+                                </td>
+                            </tr>
+                            <td class="" style="">
+                                <button type="button" class="btn btn-secondary " onclick="sendPwdValidEmail()" style="height:30px;padding-top:0px;padding-bottom:0px">發送驗證信</button>
+                                <input type="text" id="verifyCode" class="rounded-input" style="width:120px;" placeholder="驗證碼輸入" />
+                            </td>
+                            <tr>
+                                <td class="text-center">
+                                    <div class="modal-footer">
+                                        <input type="submit" id="editPwd" class="btn btn-success" value="儲存" onclick="return validatePwd();">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        @*儲存MId用*@
+                        <input type="hidden" id="Email" name="Email" value="@Model.Email" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+@section Scripts{
+
+         
+    <script>
+
+        let validMail = ""; //儲存產生的驗證碼
+
+        async function sendPwdValidEmail() {
+            //產生信箱驗證碼
+
+            validMail = doGenerateValidMailCode();
+            console.log(validMail)
+            
+            const email= '@Model.Email'
+
+            const response = await fetch(
+                `https://localhost:7139/api/Members/sendPwdVEmail?validCode=${validMail}&email=${email}`
+            );
+                
+            const data = await response.text();
+
+            function doGenerateValidMailCode() { //亂數產生驗證碼
+                
+                let code = "";
+                const RandomDatas = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+                for (let i = 0; i < 6; i++) {
+                    //產生6位數驗證碼
+                    code += RandomDatas[randomNum(0, RandomDatas.length)]
+                }
+                let txtvalue = code;
+                return txtvalue;
+            };
+
+            function randomNum(min, max) {
+                return Math.floor(Math.random() * (max - min) + min);
+            }; //隨機數字
+
+            var mailText="";
+
+            switch (data) {
+                case "SendSuccess":
+                    alert("驗證碼發送成功，請至信箱查收");
+                    break;
+                case "noEmail": 
+                    alert("查無此信箱");
+                    break;
+                default:
+                    alert("驗證信發送失敗，請再次嘗試");
+                    break;
+            };
+        };
+
+        //確認修改密碼按鈕
+        function validatePwd() {
+            var Pwd = document.getElementById("MPwd").value; //原表單密碼
+            var oldPwd = document.getElementById("oldPwd").value; //舊密碼確認欄位
+            var verificationCode = document.getElementById("verifyCode").value; //信箱驗證碼輸入欄位
+            var checkPwd = document.getElementById("checkPwd").value; //密碼確認欄位
+            var newPwd = document.getElementById("newPwd").value; //新密碼輸入欄位
+
+            if (newPwd != "") {
+                if ((verificationCode != validMail) || (verificationCode =="")) {
+                    if (newPwd != checkPwd) {
+                        alert("請重新確認新密碼");
+                        return false
+                    }
+                    alert("請輸入正確驗證碼");
+                    return false; // 這將阻止表單的提交
+                }
+                else {
+                    if (Pwd != oldPwd) {
+                        if (newPwd != checkPwd) {
+                            alert("請重新確認新密碼");
+                            return false;
+                        }
+                        alert("舊密碼錯誤。");
+                        return false;
+                    } else {
+                        if (newPwd != checkPwd) {
+                            alert("請重新確認新密碼");
+                            return false;
+                        }
+                        alert("修改成功！");
+                        return true; // 允許表單提交
+                    }
+                }
+            }
+            else {
+                alert("請輸入新密碼。")
+                return false;
+            }
+
+
+            //if (newPwd != "") {
+            //    if (verificationCode != validMail) {
+            //        if (newPwd != checkPwd) {
+            //            alert("請重新確認新密碼");
+            //            return false
+            //        }
+            //        alert("信箱驗證碼不正確");
+            //        return false; // 這將阻止表單的提交
+            //    }
+            //    else 
+            //    {
+            //        if (Pwd != oldPwd) {
+            //            if (newPwd != checkPwd) {
+            //                alert("請重新確認新密碼");
+            //                return false;
+            //            }
+            //            alert("舊密碼錯誤。");
+            //            return false;
+            //        } else {
+            //            if (newPwd != checkPwd) {
+            //                alert("請重新確認新密碼");
+            //                return false;
+            //            }
+            //            alert("修改成功！");
+            //            return true; // 允許表單提交
+            //        }
+            //    }
+            //}
+            //else 
+            //{
+            //    alert("請輸入新密碼。")
+            //    return false;
+            //}
+
+
+            //if(newPwd!=""){
+            //    if (verificationCode != validMail) {
+            //        if (newPwd != checkPwd) {
+            //            alert("請重新確認新密碼");
+            //            return false
+            //        }
+            //        alert("信箱驗證碼不正確");
+            //        return false; // 這將阻止表單的提交
+            //    }
+            //    else {
+            //        if (Pwd != oldPwd) {
+            //            if (newPwd != checkPwd) {
+            //                alert("請重新確認新密碼");
+            //                return false;
+            //            }
+            //            alert("舊密碼錯誤。");
+            //            return false;
+            //        } else {
+            //            if (newPwd != checkPwd) {
+            //                alert("請重新確認新密碼");
+            //                return false;
+            //            }
+            //            alert("修改成功！");
+            //            return true; // 允許表單提交
+            //        }
+            //    }
+            //}else{
+            //    alert("請輸入新密碼。")
+            //    return false;
+            //}
+            
+            //if (verificationCode != validMail) {
+            //    if (newPwd != checkPwd) {
+            //        alert("請重新確認新密碼");
+            //        return false
+            //    }
+            //    alert("信箱驗證碼不正確");
+            //    return false; // 這將阻止表單的提交
+            //}
+            //else {
+            //    if (Pwd != oldPwd) {
+            //        if (newPwd != checkPwd) {
+            //            alert("請重新確認新密碼");
+            //            return false;
+            //        }
+            //        alert("舊密碼錯誤。");
+            //        return false;
+            //    } else {
+            //        if (newPwd != checkPwd) {
+            //            alert("請重新確認新密碼");
+            //            return false;
+            //        }
+            //        alert("修改成功！");
+            //        return true; // 允許表單提交
+            //    }
+            //}
+        };
+
+        //demo用 忘記密碼 
+        function sendPwdToMaill() {
+            alert("已成功發送密碼，請登入信箱查收!");
+        };
+
+        //demo用 驗證信箱 
+        //function sendValidateMail() {
+        //    alert("已成功發送驗證碼，請登入信箱查收!");
+        //}
+
+        //確認修改密碼通知
+        //function confirmSave() {
+        //    if (confirm('是否儲存修改的資料?')) {
+        //        var success = true; 
+
+        //        if (success) {
+        //            alert('修改成功！');
+        //        } else {
+        //            alert('修改失敗！');
+        //        }
+        //        return true;
+        //    }
+        //    return false;
+        //};
+
+        
+        //顯示密碼按鈕
+        document.getElementById("switchPwd").addEventListener("change", function () {
+            var pwdInput = document.getElementById("MPwd");
+            if (pwdInput.type === "password") {
+                pwdInput.type = "text";
+            } else {
+                pwdInput.type = "password";
+            }
+        });
+
+    </script>
+}
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+﻿
+@*當顯示完成功訊息時就關閉本視窗*@
+<script>
+    alert('@Html.Raw(ViewBag.Message)'); //顯示更改成功訊息
+    window.close();  //關閉視窗
+</script>

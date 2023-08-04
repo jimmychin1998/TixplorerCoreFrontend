@@ -1,0 +1,159 @@
+﻿@model IEnumerable<TixplorerCoreFrontend.ViewModels.CartViewModel>
+
+@{
+    ViewData["Title"] = "CartView";
+}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+
+<div class="container mt-5 mb-5" style="font-family: 'Noto Sans TC', sans-serif;">
+<h2>購物車</h2>
+
+<table class="table table-striped table-hover table-borderless border rounded">
+    <thead style="text-align: center;">
+        <tr>
+            <th colspan="2">
+                商品
+            </th>
+            <th>
+                價格
+            </th>
+            <th>
+                數量
+            </th>
+            <th>
+                金額
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int count = 0;
+            decimal sum = 0;
+            foreach (var item in Model)
+            {
+                count++;
+                sum += item.SubTotal;
+                <tr style="vertical-align: middle">
+                <td style="text-align: center;">
+                    <img src="/images/@item.mainProduct.Image" class="object-fit-cover border rounded" style="width: 80px; height: 80px;" />
+                </td>
+                @if (item.ProductType == 0) // 如果商品是單票，則僅顯示主商品。
+                {
+                    <td>
+                        <a class="link-dark link-underline link-underline-opacity-0" href="@string.Format("https://localhost:7289/Ticket/ticket?id={0}", @item.mainProduct.PId)" >@item.mainProduct.Name</a> / @item.CartItemId
+                    </td>
+                }
+                else // 如果商品是套票，分開顯示主商品與子商品。
+                {
+                    <td>
+                        <div> <!--主商品顯示-->
+                                    <a class="link-dark link-underline link-underline-opacity-0" href="@string.Format("https://localhost:7289/Ticket/ticket?id={0}", @item.mainProduct.PId)">@item.mainProduct.Name</a> / @item.CartItemId
+                        </div>
+                        <div class="ms-2">  <!--子商品縮排顯示-->
+                                @foreach (var subProduct in item.product)
+                                {
+                                    <div>
+                                            <a class="link-dark link-underline link-underline-opacity-0" href="@string.Format("https://localhost:7289/Ticket/ticket?id={0}", subProduct.PId)">【套票組合】@subProduct.Name</a> / @item.CartItemId
+                                    </div>
+                                }
+                        </div>
+                    </td>
+                }
+                @if (item.ProductType == 0)
+                    {
+                        <td style="text-align: center;">
+                            <span class="text-secondary text-decoration-line-through">
+                                $@item.mainProduct.Price.ToString("N0")
+                            </span><span class="text-danger fw-bold">
+                                $@string.Format("{0:N0}", item.mainProduct.DiscountPrice)
+                            </span>
+                        </td>
+                    }
+                    else
+                    {
+                        <td style="text-align: center;">
+                            <span class="text-secondary text-decoration-line-through">
+                                $@string.Format("{0:N0}", item.SubTotal * 1.1m)
+                            </span>
+                            <span class="text-danger fw-bold">
+                                $@item.SubTotal.ToString("N0")
+                            </span>
+                        </td>
+                    }
+                    <td style="text-align: center;">
+                        <span>@Html.DisplayFor(modelItem => item.Count)</span>
+                    </td>
+                        <td style="text-align: center;">
+                        $<span class="subtotal">@Html.DisplayFor(modelItem => item.SubTotal)</span>
+                    </td>
+                    <td style="text-align: center;">
+                        @Html.ActionLink("移除", "Delete", "Cart", new { id = item.CartItemId }, new { onclick = "return confirm('確定要移除這個商品嗎?')", Class = "text link-dark link-offset-2 link-underline-opacity-0" })
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+    </table>
+    <div class="container d-grid gap-2 d-md-flex justify-content-md-between mt-5">
+        <a href="https://localhost:7289/Search" class="btn btn-secondary btn-lg">繼續購物</a>
+        @{
+            var userData = Context.Session.GetString(CDictionary.TIXPLORER_USER_DATA);
+        }
+
+        @if (!string.IsNullOrEmpty(userData))
+        {
+            <p> @count 項商品<span class="fs-5 fw-bold"> 總金額 $ @sum.ToString("N0") </span> </p>
+            @Html.ActionLink("結 帳 去", "Checkout", "Checkout", null, new { @class = "btn btn-primary btn-lg" })
+        }
+        else
+        {
+            <p> @count 項商品<span class="fs-5 fw-bold"> 總金額 $ @sum.ToString("N0") </span> </p>
+            <button class="btn btn-primary btn-lg" onclick="redirectToLogin()">結 帳 去</button>
+        }
+    </div>
+    <div>
+    </div>
+</div>
+
+
+<script>
+    var cartData = @Json.Serialize(Model);
+    function redirectToLogin() {
+        var cartDataJsonString = JSON.stringify(cartData);
+        var url = `http://localhost:5173/Login?cartData=${cartDataJsonString}`;
+        window.location.href = url;
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        // 當按下 + 按鈕時，增加數量並更新小計
+        $(".increment").click(function () {
+            var quantityInput = $(this).siblings(".quantity-input");
+            var quantity = parseInt(quantityInput.val());
+            quantityInput.val(quantity + 1);
+            updateSubtotal($(this));
+        });
+
+        // 當按下 - 按鈕時，減少數量並更新小計
+        $(".decrement").click(function () {
+            var quantityInput = $(this).siblings(".quantity-input");
+            var quantity = parseInt(quantityInput.val());
+            if (quantity > 1) {
+                quantityInput.val(quantity - 1);
+                updateSubtotal($(this));
+            }
+        });
+
+        // 更新小計的價格
+        function updateSubtotal(button) {
+            var quantity = parseInt(button.siblings(".quantity-input").val());
+            var unitPrice = parseFloat(button.siblings(".unit-price").text().replace("$", ""));
+            var subtotal = quantity * unitPrice;
+            button.siblings(".subtotal").text(subtotal.toFixed(2));
+        }
+    });
+</script>
+
+<!-- var encodedCartData = encodeURIComponent(cartDataJsonString); -->

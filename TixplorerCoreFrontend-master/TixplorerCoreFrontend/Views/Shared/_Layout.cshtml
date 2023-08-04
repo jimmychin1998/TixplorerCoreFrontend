@@ -1,0 +1,176 @@
+﻿@using TixlorerCore.Models;
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor Accessor;
+
+<!doctype html>
+<html lang="en">
+@{
+    //登入畫面
+    //isLogout為SPA判斷是否登出用的參數
+    //int isLogout = 0;
+    //if (string.IsNullOrEmpty(Accessor.HttpContext.Session.GetString(CDictionary.TIXPLORER_USER_DATA)) && Accessor.HttpContext.Session.GetString(CDictionary.TIXPLORER_USER_DATA) != "")
+    //{
+    //    isLogout = 1;
+    //}
+    //建立連結路徑(FOR SPA專案功能使用)：
+    string LoginAddress = GlobalVar.SPAurl + "Login";
+    string RegisterAddress = GlobalVar.SPAurl + "RegisterValid";
+    string CartAddress = "/Cart/CartView";
+    string FAQAddress = GlobalVar.SPAurl + "problem";
+}
+
+<head>
+    <title>Tixplorer-到處玩趴趴走</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS v5.3.0 -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+
+<body>
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg bg-gradient navbarHome">
+            <div class="container-fluid ">
+                <a class="navbar-brand" href="/"><img src="~/images/tixplorer.png"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                    <ul class="navbar-nav mb-2 mb-lg-0">
+                        @*                        <li class="nav-item d-none d-s-block">
+                        <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success bg-info text-light" type="submit">Search</button>
+                        </form>
+                        </li>*@
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                旅遊
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="javascript:void(0)">高雄</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)">台北</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)">台中</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)">苗栗</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)">台南</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <ul class="navbar-nav mb-2 mb-lg-0 autoright">
+                        <li class="nav-item">
+                            <a class="nav-link" id="Cart" href=@CartAddress>購物車</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="Register" href=@RegisterAddress></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="Login" aria-current="page" href=@LoginAddress></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href=@FAQAddress>常見問題</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="javascript:void(0)">聯絡我們</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    @RenderBody()
+    <footer class="sticky-bottom">
+        <div class="container-fluid">
+            <div class="row justify-content-center text-center text-bg-dark">
+                <div class="col-5 align-content-center text-start">
+                    <div class="item d-flex justify-content-center align-items-center">
+                        <div class="mt-3 mb-2">
+                            <img src="~/images/TitleLogo.png" />
+                        </div>
+                        <div>
+                            <div class="mb-2">
+                                網站僅供練習使用，若有侵權疑慮
+                            </div>
+                            <div class="mb-2">
+                                請聯絡信箱：WeiTest1024@gmail.com
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-5 align-content-center text-start">
+                    <div class="item">
+                        <div class="mt-3 mb-3">
+                            <h5>服務條款</h5>
+                        </div>
+                        <div class="mb-3">
+                            <div href="javascript:void(0)" class="mb-3" id="">服務條款</div>
+                        </div>
+                        <div class="mb-3">
+                            <div href="javascript:void(0)" class="mb-3" id="">隱私權政策</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.6/dist/umd/popper.min.js"
+            integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous">
+    </script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <script>
+            //JS用全域變數區
+            //SPA專案使用本機路徑(請根據自己電腦的localhost修改)
+            var SPAurl = "http://localhost:5173/";
+            //SPA專案使用雲端路徑(使用時請註解掉本機路徑)
+            //var SPAurl = "http://localhost:5173/";
+
+            //MVC專案使用本機路徑(請根據自己電腦的localhost修改)
+            var MVCurl = 'https://localhost:7289/';
+            var MVCsurl = 'https://localhost:7289/';
+            //MVC專案使用雲端路徑(使用時請註解掉本機路徑)
+            //var SPAurl = 'http://localhost:7289/';
+    </script>
+
+    @if (!(string.IsNullOrEmpty(Accessor.HttpContext.Session.GetString(CDictionary.TIXPLORER_USER_DATA)) && Accessor.HttpContext.Session.GetString(CDictionary.TIXPLORER_USER_DATA) != ""))
+    {//如果使用者已登入，則隱藏註冊按鈕，並更改登入按鈕為登出
+        <script>
+            window.addEventListener('load', function () {
+                $('#Register').text('會員中心')
+                $('#Register').attr('href', '/Members/Edit')
+                $('#Login').text('會員登出')
+                $('#Login').attr('href', '/Home/Logout')
+            })
+        </script>
+    }
+    else
+    {//如果使用者未登入，則正常顯示註冊按鈕、登入按鈕
+        //
+@*        isLogout = 1;*@
+        <script>
+            window.addEventListener('load', function () {
+                $('#Register').text('會員註冊')
+                $('#Login').text('會員登入')
+
+                var SPAurl2 = "http://localhost:5173/";
+
+                const spytoSPA = $('<iframe>').css('display', 'none').attr('src', `${SPAurl}Login?isLoginout=1`)
+                $('footer').append(spytoSPA)
+            })      
+        </script>
+    }
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+
+</html>

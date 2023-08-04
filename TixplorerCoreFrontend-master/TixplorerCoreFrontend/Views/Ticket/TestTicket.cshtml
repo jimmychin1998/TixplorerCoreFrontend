@@ -1,0 +1,1245 @@
+﻿@using System.Diagnostics
+@model TixplorerCoreFrontend.ViewModels.TicketViewModel
+
+@{
+    ViewData["Title"] = "Ticket";
+}
+@section Styles
+    {
+    <style>
+        .item2 .textspan {
+            margin-right: 10px;
+        }
+
+        .TicketAmount .textspan {
+            margin-right: 10px;
+        }
+
+        .TicketAmount .mybutton {
+            width: 30px;
+            height: 30px;
+        }
+
+        .TicketAmount .numberspan {
+            margin-right: 10px;
+            margin-left: 10px;
+        }
+
+        #restaurantsearchResult {
+            display: none;
+        }
+
+        #hotelsearchResult {
+            display: none;
+        }
+
+        #addBtn {
+            margin-right: 20px;
+        }
+
+        #restaurantpage {
+            /*margin-top: 70px;*/
+            display: none;
+        }
+
+        #hotelpage {
+            /*margin-top: 70px;*/
+            display: none;
+        }
+
+        #packageticketprice {
+            display: none;
+        }
+
+        #hotel-selected-page {
+            display: none;
+        }
+
+        #restaurant-selected-page {
+            display: none;
+        }
+
+        @@media (max-width: 991px) {
+            #eventtickets {
+                margin-top: 20px;
+            }
+        }
+
+        @@media (min-width: 992px) {
+            #eventtickets {
+                margin-top: 70px;
+            }
+        }
+
+        #selected-restaurant-id {
+            display: none;
+        }
+
+        #selected-hotel-id {
+            display: none;
+        }
+
+        #SettleAccount {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        #SettleAccountbutton {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .Cart {
+            margin-right: 20px;
+        }
+
+        .custom-title {
+            font-size: 2.5em;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            margin-top: 30px;
+        }
+
+        .custom-image {
+            border-radius: 15px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+            margin-top: 10px;
+        }
+
+        .Desc {
+            font-family: 'Arial', sans-serif; /* 使用 Arial 字體，如果無法取得則使用無襯線字體 */
+            color: #555; /* 字體顏色為深灰色 */
+            line-height: 1.5; /* 行高為 1.5 */
+        }
+
+        .original-price {
+            color: gray;
+            text-decoration: line-through;
+        }
+
+        .sale-price {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 24px;
+            color: red;
+        }
+
+        .StockQuantity {
+            margin-left: 50px;
+        }
+
+        .MainCard {
+            border-radius: 10px;
+        }
+
+        .card-desc {
+            line-height: 20px;
+            height: 57px;
+            /*overflow: hidden;*/
+        }
+    </style>
+}
+
+<div class="container">
+    <h2 class="custom-title">@Model.product.Name</h2>
+    <div class="row border shadow mx-2 mt-2 mb-2 MainCard">
+        @*border shadow mx-2 mt-2 mb-2 MainCard*@
+        <p id="main-ticket-id" style="display: none">@Model.product.PId</p>
+
+        <div class="col-lg-6 col-md-12 mb-4 mt-2">
+            @*mb-2 mt-2*@
+            <div class="item1">
+                <img src="~/images/@Model.product.Image"
+                     class="img-fluid custom-image"
+                     alt="Placeholder Image" />
+            </div>
+        </div>
+        <div id="eventtickets" class="col-lg-6 col-md-12">
+            <h3 class="Desc">@Model.product.Desc</h3>
+            <div class="item2">
+                <span class="textspan sale-price">$<span class="main-ticket-price">@Model.product.DiscountPrice</span></span>
+                <span class="textspan original-price">$<span>@Model.product.Price</span></span>
+                <span class="textspan StockQuantity">庫存量：<span>@Model.product.StockNumber</span></span>
+                @*<span>@Model.isEventTicket</span>*@
+
+            </div>
+            <br />
+            <button id="packageticketbutton" class="btn btn-info mb-2" value="@Model.product.PId">
+                欲訂購套票請按此
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 飯店票券 -->
+<div id="hotelpage">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <div class="item3">
+                    <h2 id="New-section-hotel" style="visibility:hidden">移動至該位置</h2>
+                    <h2 class="custom-title" id="section-hotel">飯店票券</h2>
+                    <div id="hotel-search-function">
+                        <form class="d-flex" id="hotelsearchForm">
+                            <input class="form-control me-2"
+                                   type="search"
+                                   id="hotelsearchBox"
+                                   placeholder="查詢飯店票券~"
+                                   aria-label="Search" />
+                            <button id="hotel_search_button" class="btn btn-outline-success" value="@Model.product.PId" type="submit">
+                                搜尋
+                            </button>
+                        </form>
+                        <br />
+                        <h5 id="hotelsearchResult"></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 已選飯店票券 -->
+    <div id="hotel-selected-page">
+        <div class="container">
+            <div class="row border shadow mx-2 mt-2 mb-2 MainCard">
+                <div class="col-lg-6 col-md-12 mb-4 mt-2">
+                    <img id="hotel-selected-image"
+                         src=""
+                         class="img-fluid custom-image"
+                         alt="Placeholder Image" />
+                </div>
+                <div id="eventtickets" class="col-lg-6 col-md-12">
+                    <h3 id="selected-hotel-ticket-name"></h3>
+                    @*記住id並隱藏*@
+                    <p id="selected-hotel-id"></p>
+                    <h4 id="selected-hotel-ticket" class="Desc"></h4>
+                    <p class="sale-price">$<span class="hotel-ticket-price">0</span></p>
+                    <button id="reselect-hotel-ticket" class="btn btn-info">
+                        重新選擇飯店票券
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="hotel-ticket-card">
+        <div class="container">
+            <div class="row" id="hotel-card-create">
+                <!-- 飯店card -->
+                @*@if (Model.HotelPId != null)
+                {
+                for (int i = 0; i < Model.HotelName.Count; i++)
+                {
+                <div class="col-lg-4 col-md-12">
+                <div class="card hotel-card">
+                <img src="~/images/@(Model.HotelImage[i]).jpg" class="card-img-top" style="height: 250px; width: 100%; object-fit: cover;" alt="Image">
+                <div class="card-body">
+                <h5 class="card-title hotel-card-title">@Model.HotelName[i]</h5>
+                <p class="card-text">@Model.HotelDesc[i]</p>
+                <p>價格：<span class="card-price">@Model.HotelPrice[i]</span></p>
+                <a href="#" class="btn btn-primary">瀏覽票券</a>
+                <button data-hotelcard-index="@i"
+                class="hotel-btn-save btn btn-secondary">
+                選擇
+                </button>
+                <!-- data-hotelcard-index的值要隨著card的數量而增加 -->
+                </div>
+                </div>
+                </div>
+                }
+                }*@
+            </div>
+        </div>
+
+        <!-- 飯店頁數管控 -->
+        <br />
+        <nav aria-label="Page navigation example">
+            <ul id="hotel-page-create" class="pagination justify-content-center">
+                @*<li class="page-item hotel-page-item">
+                <a class="page-link hotel-page-link" href="javascript:void(0)">上一頁</a>
+                </li>*@
+
+                @*@if (Model.HotelPId != null)
+                {
+                int hotel_quotient = Model.HotelName.Count / 3;
+                int hotel_remainder = Model.HotelName.Count % 3;
+                if (hotel_remainder > 0)
+                {
+                hotel_quotient += 1;
+                }
+                for (int i = 1; i <= hotel_quotient; i++)
+                {
+                if (i == 1)
+                {
+                <li class="page-item hotel-page-item active">
+                <a class="page-link hotel-page-link" href="javascript:void(0)">@i</a>
+                </li>
+                }
+                else
+                {
+                <li class="page-item hotel-page-item">
+                <a class="page-link hotel-page-link" href="javascript:void(0)">@i</a>
+                </li>
+                }
+                }
+                }*@
+
+                @*<li class="page-item hotel-page-item">
+                <a class="page-link hotel-page-link" href="javascript:void(0)">下一頁</a>
+                </li>*@
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- 餐廳票券 -->
+<div id="restaurantpage">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <div class="item3">
+                    <h2 id="New-section-restaurant" style="visibility:hidden">移動至該位置</h2>
+                    <h2 class="custom-title" id="section-restaurant">餐廳票券</h2>
+                    <div id="restaurant-search-function">
+                        <form class="d-flex" id="restaurantsearchForm">
+                            <input class="form-control me-2"
+                                   type="search"
+                                   id="restaurantsearchBox"
+                                   placeholder="查詢餐廳票券~"
+                                   aria-label="Search" />
+                            <button id="restaurant_search_button" class="btn btn-outline-success" value="@Model.product.PId" type="submit">
+                                搜尋
+                            </button>
+                        </form>
+                        <br />
+                        <h5 id="restaurantsearchResult"></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 已選餐廳票券 -->
+    <div id="restaurant-selected-page">
+        <div class="container">
+            <div class="row border shadow mx-2 mt-2 mb-2 MainCard">
+                <div class="col-lg-6 col-md-12 mb-4 mt-2">
+                    <img id="restaurant-selected-image"
+                         src=""
+                         class="img-fluid custom-image"
+                         alt="Placeholder Image" />
+                </div>
+                <div id="eventtickets" class="col-lg-6 col-md-12">
+                    <h3 id="selected-restaurant-ticket-name"></h3>
+                    @*記住id並隱藏*@
+                    <p id="selected-restaurant-id"></p>
+                    <h4 id="selected-restaurant-ticket" class="Desc"></h4>
+                    <p class="sale-price">$<span class="restaurant-ticket-price">0</span></p>
+                    <button id="reselect-restaurant-ticket" class="btn btn-info">
+                        重新選擇餐廳票券
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="restaurant-ticket-card">
+        <div class="container">
+            <div class="row" id="restaurant-card-create">
+                <!-- 餐廳card -->
+                @*@if (Model.RestaurantPId != null)
+                {
+                for (int i = 0; i < Model.RestaurantName.Count; i++)
+                {
+                <div class="col-lg-4 col-md-12">
+                <div class="card restaurant-card">
+                <img src="~/images/@(Model.RestaurantImage[i]).jpg" class="card-img-top" style="height: 250px; width: 100%; object-fit: cover;" alt="Image">
+                <div class="card-body">
+                <h5 class="card-title restaurant-card-title">@Model.RestaurantName[i]</h5>
+                <p class="card-text">@Model.RestaurantDesc[i]</p>
+                <p>價格：<span class="card-price">@Model.RestaurantPrice[i]</span></p>
+                <a href="#" class="btn btn-primary">瀏覽票券</a>
+                <button data-restaurantcard-index="@i"
+                class="restaurant-btn-save btn btn-secondary">
+                選擇
+                </button>
+                <!-- data-hotelcard-index的值要隨著card的數量而增加 -->
+                </div>
+                </div>
+                </div>
+                }
+                }*@
+            </div>
+        </div>
+
+        <!-- 餐廳頁數管控 -->
+        <br />
+        <nav aria-label="Page navigation example">
+            <ul id="restaurant-page-create" class="pagination justify-content-center">
+                @*<li class="page-item restaurant-page-item">
+                <a class="page-link restaurant-page-link" href="javascript:void(0)">上一頁</a>
+                </li>*@
+                @*@if (Model.RestaurantPId != null)
+                {
+                int restaurant_quotient = Model.RestaurantName.Count / 3;
+                int restaurant_remainder = Model.RestaurantName.Count % 3;
+                if (restaurant_remainder > 0)
+                {
+                restaurant_quotient += 1;
+                }
+                for (int i = 1; i <= restaurant_quotient; i++)
+                {
+                if (i == 1)
+                {
+                <li class="page-item restaurant-page-item active">
+                <a class="page-link restaurant-page-link" href="javascript:void(0)">@i</a>
+                </li>
+                }
+                else
+                {
+                <li class="page-item restaurant-page-item">
+                <a class="page-link restaurant-page-link" href="javascript:void(0)">@i</a>
+                </li>
+                }
+                }
+                }*@
+
+                @*<li class="page-item restaurant-page-item">
+                <a class="page-link restaurant-page-link" href="javascript:void(0)">下一頁</a>
+                </li>*@
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<div id="SettleAccount" class="container">
+    <div class="row">
+        <div class="col-lg-6 col-md-12">
+            <div class="TicketAmount">
+                <h5 id="packageticketprice">套票九折優惠：<span class="package-ticket-price">0</span></h5>
+                <span class="textspan">購買數量：</span>
+                <button id="subtractBtn" class="mybutton">-</button>
+                <span id="MainTicketQuantity" class="numberspan">1</span>
+                <button id="addBtn" class="mybutton">+</button>
+                <span>總價：<span class="total-price">0</span></span>
+            </div>
+        </div>
+        <div id="SettleAccountbutton" class="col-lg-6 col-md-12">
+            <button id="AddToCart" class="btn btn-outline-success Cart">加入購物車</button>
+            <button id="CheckBill" class="btn btn-outline-success">直接結帳</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+    {
+    <script>
+        //有無按下 "欲訂購套票請按此" 按鈕
+        var isPackageTicket = 0
+        //欲訂購套票請按此
+        $('#packageticketbutton').click(function () {
+            $.ajax({
+                url: '@Url.Action("GetServerData", "Ticket")',
+                type: 'GET',
+                data: { id: this.value },  // 將按鈕的值傳送到伺服器
+                success: function (data) {
+                    if (data === null || data === undefined) {
+                        // 處理 data 為 null 或 undefined 的情況
+                        console.log(error);
+                    } else {
+                        //判斷有按下 "欲訂購套票請按此" 按鈕
+                        isPackageTicket = 1
+
+                        //alert(`${MVCurl}`)
+                        //在_Layout有新增script為var MVCurl = 'https://localhost:7289/'
+                        //`${MVCurl}`這寫法是取用該值的方式
+
+                        //建立hotel card
+                        for (var i = 0; i < JSON.parse(data)[0].length; i++) {
+
+                            var hotel = JSON.parse(data)[0][i];
+                            var hotelDesc = hotel.Desc.length > 40 ? hotel.Desc.substring(0, 40) + ' . . .' : hotel.Desc;
+                            // 使用 jQuery 動態創建新的酒店卡片並添加到頁面上
+                            var newCard = $('<div>').addClass('col-lg-4 col-md-12').append(
+                                $('<div>').addClass('card hotel-card').append(
+                                    $('<img>').attr('src', '/images/' + hotel.Image).addClass('card-img-top').css({ height: '250px', width: '100%', 'object-fit': 'cover' }),
+                                    $('<div>').addClass('card-body').append(
+                                        $('<h5>').addClass('card-title hotel-card-title').text(hotel.Name),
+                                        //記住id並隱藏
+                                        $('<p>').addClass('card-id').text(hotel.PId).hide(),
+                                        $('<p>').addClass('card-text card-desc').text(hotelDesc),
+                                        $('<p>').addClass('sale-price').html('$<span class="card-price">' + hotel.Price + '</span>'),
+                                        $('<a>').attr('href', `${MVCurl}` + 'Ticket/TestTicket/' + hotel.PId).attr('target', '_blank').addClass('btn btn-primary').css('margin-right', '20px').text('瀏覽票券'),
+                                        $('<button>').attr('data-hotelcard-index', i).addClass('hotel-btn-save btn btn-secondary').text('選擇')
+                                    )
+                                )
+                            );
+                            $('#hotel-card-create').append(newCard);
+                        }
+
+                        //建立hotel page
+                        var HotelPreviousPage = `
+                                                                 <li class="page-item hotel-page-item">
+                                                                    <a class="page-link hotel-page-link" href="javascript:void(0)">上一頁</a>
+                                                                 </li>`;
+                        $('#hotel-page-create').append(HotelPreviousPage);
+                        var hotel_quotient = JSON.parse(data)[0].length / 3;
+                        var hotel_remainder = JSON.parse(data)[0].length % 3;
+                        var HotelRoundedValue = hotel_quotient;
+                        if (hotel_remainder > 0) {
+                            hotel_quotient += 1;
+                            HotelRoundedValue = Math.floor(hotel_quotient);
+                        }
+                        for (var i = 1; i <= HotelRoundedValue; i++) {
+                            var liClass = (i === 1) ? 'page-item hotel-page-item active' : 'page-item hotel-page-item';
+                            var liElement = $('<li>').addClass(liClass);
+                            var aElement = $('<a>').addClass('page-link hotel-page-link').attr('href', 'javascript:void(0)').text(i);
+
+                            liElement.append(aElement);
+                            $('#hotel-page-create').append(liElement);
+                        }
+                        var HotelNextPage = `
+                                                                <li class="page-item hotel-page-item">
+                                                                    <a class="page-link hotel-page-link" href="javascript:void(0)">下一頁</a>
+                                                                </li>`;
+                        $('#hotel-page-create').append(HotelNextPage);
+
+                        //建立restaurant card
+                        for (var i = 0; i < JSON.parse(data)[1].length; i++) {
+
+                            var restaurant = JSON.parse(data)[1][i];
+                            var restaurantDesc = restaurant.Desc.length > 40 ? restaurant.Desc.substring(0, 40) + ' . . .' : restaurant.Desc;
+                            // 使用 jQuery 動態創建新的酒店卡片並添加到頁面上
+                            var newCard = $('<div>').addClass('col-lg-4 col-md-12').append(
+                                $('<div>').addClass('card restaurant-card').append(
+                                    $('<img>').attr('src', '/images/' + restaurant.Image).addClass('card-img-top').css({ height: '250px', width: '100%', 'object-fit': 'cover' }),
+                                    $('<div>').addClass('card-body').append(
+                                        $('<h5>').addClass('card-title restaurant-card-title').text(restaurant.Name),
+                                        //記住id並隱藏
+                                        $('<p>').addClass('card-id').text(restaurant.PId).hide(),
+                                        $('<p>').addClass('card-text card-desc').text(restaurantDesc),
+                                        $('<p>').addClass('sale-price').html('$<span class="card-price">' + restaurant.Price + '</span>'),
+                                        $('<a>').attr('href', `${MVCurl}` + 'Ticket/TestTicket/' + restaurant.PId).attr('target', '_blank').addClass('btn btn-primary').css('margin-right', '20px').text('瀏覽票券'),
+                                        $('<button>').attr('data-restaurantcard-index', i).addClass('restaurant-btn-save btn btn-secondary').text('選擇')
+                                    )
+                                )
+                            );
+                            $('#restaurant-card-create').append(newCard);
+                        }
+
+                        //建立restaurant page
+                        var RestaurantPreviousPage = `
+                                                                <li class="page-item restaurant-page-item">
+                                                                    <a class="page-link restaurant-page-link" href="javascript:void(0)">上一頁</a>
+                                                                </li>`;
+                        $('#restaurant-page-create').append(RestaurantPreviousPage);
+                        var restaurant_quotient = JSON.parse(data)[1].length / 3;
+                        var restaurant_remainder = JSON.parse(data)[1].length % 3;
+                        var RestaurantRoundedValue = restaurant_quotient;
+                        if (restaurant_remainder > 0) {
+                            restaurant_quotient += 1;
+                            RestaurantRoundedValue = Math.floor(restaurant_quotient);
+                        }
+                        for (var i = 1; i <= RestaurantRoundedValue; i++) {
+                            var liClass = (i === 1) ? 'page-item restaurant-page-item active' : 'page-item restaurant-page-item';
+                            var liElement = $('<li>').addClass(liClass);
+                            var aElement = $('<a>').addClass('page-link restaurant-page-link').attr('href', 'javascript:void(0)').text(i);
+
+                            liElement.append(aElement);
+                            $('#restaurant-page-create').append(liElement);
+                        }
+                        var RestaurantNextPage = `
+                                                                <li class="page-item restaurant-page-item">
+                                                                    <a class="page-link restaurant-page-link" href="javascript:void(0)">下一頁</a>
+                                                                </li>`;
+                        $('#restaurant-page-create').append(RestaurantNextPage);
+
+                        pagination(".hotel-card", ".hotel-page-link", ".hotel-page-item");
+                        pagination(".restaurant-card", ".restaurant-page-link", ".restaurant-page-item");
+                        handlePageClick(".hotel-page-item", ".hotel-page-link");
+                        handlePageClick(".restaurant-page-item", ".restaurant-page-link");
+                        // 飯店
+                        handleTicketSelection(
+                            ".hotel-btn-save",
+                            "hotel-ticket-card",
+                            "hotel-search-function",
+                            "#selected-hotel-ticket-name",
+                            "#selected-hotel-ticket",
+                            ".hotel-ticket-price",
+                            "#hotel-selected-image",
+                            "hotel-selected-page",
+                            "New-section-hotel",
+                            "#selected-hotel-id"
+                        );
+
+                        // 餐廳
+                        handleTicketSelection(
+                            ".restaurant-btn-save",
+                            "restaurant-ticket-card",
+                            "restaurant-search-function",
+                            "#selected-restaurant-ticket-name",
+                            "#selected-restaurant-ticket",
+                            ".restaurant-ticket-price",
+                            "#restaurant-selected-image",
+                            "restaurant-selected-page",
+                            "New-section-restaurant",
+                            "#selected-restaurant-id"
+                        );
+
+                        calculatePackagePrice();
+                        calculateTotalPrice();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('HTTP status code:', jqXHR.status);
+                    console.log('HTTP status text:', jqXHR.statusText);
+                    console.log('Error message:', errorThrown);
+                    $('#result').text('Error: ' + errorThrown);
+                }
+            });
+        });
+
+        //飯店查詢
+        $('#hotel_search_button').click(function (e) {
+            e.preventDefault();  // 防止表單提交
+            var keyword = $('#hotelsearchBox').val();
+            var buttonValueID = $(this).val();
+            $.ajax({
+                url: '@Url.Action("GetHotelSearchData", "Ticket")',
+                type: 'GET',
+                data: { name: keyword, id: buttonValueID },  // 將按鈕的值傳送到伺服器
+                success: function (data) {
+                    if (data === null || data === undefined) {
+                        // 處理 data 為 null 或 undefined 的情況
+                        console.log(error);
+                    } else {
+                        //將原本的hotel card 以及 hotel page 刪除
+                        $("#hotel-card-create").empty();
+                        $("#hotel-page-create").empty();
+
+                        //建立hotel card
+                        for (var i = 0; i < JSON.parse(data)[0].length; i++) {
+
+                            var hotel = JSON.parse(data)[0][i];
+                            var hotelDesc = hotel.Desc.length > 40 ? hotel.Desc.substring(0, 40) + ' . . .' : hotel.Desc;
+                            // 使用 jQuery 動態創建新的酒店卡片並添加到頁面上
+                            var newCard = $('<div>').addClass('col-lg-4 col-md-12').append(
+                                $('<div>').addClass('card hotel-card').append(
+                                    $('<img>').attr('src', '/images/' + hotel.Image).addClass('card-img-top').css({ height: '250px', width: '100%', 'object-fit': 'cover' }),
+                                    $('<div>').addClass('card-body').append(
+                                        $('<h5>').addClass('card-title hotel-card-title').text(hotel.Name),
+                                        //記住id並隱藏
+                                        $('<p>').addClass('card-id').text(hotel.PId).hide(),
+                                        $('<p>').addClass('card-text card-desc').text(hotelDesc),
+                                        $('<p>').addClass('sale-price').html('$<span class="card-price">' + hotel.Price + '</span>'),
+                                        $('<a>').attr('href', `${MVCurl}` + 'Ticket/TestTicket/' + hotel.PId).attr('target', '_blank').addClass('btn btn-primary').css('margin-right', '20px').text('瀏覽票券'),
+                                        $('<button>').attr('data-hotelcard-index', i).addClass('hotel-btn-save btn btn-secondary').text('選擇')
+                                    )
+                                )
+                            );
+                            $('#hotel-card-create').append(newCard);
+                        }
+
+                        //建立hotel page
+                        var HotelPreviousPage = `
+                         <li class="page-item hotel-page-item">
+                          <a class="page-link hotel-page-link" href="javascript:void(0)">上一頁</a>
+                        </li>`;
+                        $('#hotel-page-create').append(HotelPreviousPage);
+                        var hotel_quotient = JSON.parse(data)[0].length / 3;
+                        var hotel_remainder = JSON.parse(data)[0].length % 3;
+                        var HotelRoundedValue = hotel_quotient;
+                        if (hotel_remainder > 0) {
+                            hotel_quotient += 1;
+                            HotelRoundedValue = Math.floor(hotel_quotient);
+                        }
+                        for (var i = 1; i <= HotelRoundedValue; i++) {
+                            var liClass = (i === 1) ? 'page-item hotel-page-item active' : 'page-item hotel-page-item';
+                            var liElement = $('<li>').addClass(liClass);
+                            var aElement = $('<a>').addClass('page-link hotel-page-link').attr('href', 'javascript:void(0)').text(i);
+
+                            liElement.append(aElement);
+                            $('#hotel-page-create').append(liElement);
+                        }
+                        var HotelNextPage = `
+                                                                        <li class="page-item hotel-page-item">
+                                                                            <a class="page-link hotel-page-link" href="javascript:void(0)">下一頁</a>
+                                                                        </li>`;
+                        $('#hotel-page-create').append(HotelNextPage);
+
+
+                        pagination(".hotel-card", ".hotel-page-link", ".hotel-page-item");
+                        handlePageClick(".hotel-page-item", ".hotel-page-link");
+                        // 飯店
+                        handleTicketSelection(
+                            ".hotel-btn-save",
+                            "hotel-ticket-card",
+                            "hotel-search-function",
+                            "#selected-hotel-ticket-name",
+                            "#selected-hotel-ticket",
+                            ".hotel-ticket-price",
+                            "#hotel-selected-image",
+                            "hotel-selected-page",
+                            "New-section-hotel",
+                            "#selected-hotel-id"
+                        );
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('HTTP status code:', jqXHR.status);
+                    console.log('HTTP status text:', jqXHR.statusText);
+                    console.log('Error message:', errorThrown);
+                    $('#result').text('Error: ' + errorThrown);
+                }
+            });
+        });
+
+        //餐廳查詢
+        $('#restaurant_search_button').click(function (e) {
+            e.preventDefault();  // 防止表單提交
+            var keyword = $('#restaurantsearchBox').val();
+            var buttonValueID = $(this).val();
+            $.ajax({
+                url: '@Url.Action("GetRestaurantSearchData", "Ticket")',
+                type: 'GET',
+                data: { name: keyword, id: buttonValueID },  // 將按鈕的值傳送到伺服器
+                success: function (data) {
+                    if (data === null || data === undefined) {
+                        // 處理 data 為 null 或 undefined 的情況
+                        console.log(error);
+                    } else {
+                        //將原本的hotel card 以及 hotel page 刪除
+                        $("#restaurant-card-create").empty();
+                        $("#restaurant-page-create").empty();
+
+                        //建立restaurant card
+                        for (var i = 0; i < JSON.parse(data)[0].length; i++) {
+
+                            var restaurant = JSON.parse(data)[0][i];
+                            var restaurantDesc = restaurant.Desc.length > 40 ? restaurant.Desc.substring(0, 40) + ' . . .' : restaurant.Desc;
+                            // 使用 jQuery 動態創建新的酒店卡片並添加到頁面上
+                            var newCard = $('<div>').addClass('col-lg-4 col-md-12').append(
+                                $('<div>').addClass('card restaurant-card').append(
+                                    $('<img>').attr('src', '/images/' + restaurant.Image).addClass('card-img-top').css({ height: '250px', width: '100%', 'object-fit': 'cover' }),
+                                    $('<div>').addClass('card-body').append(
+                                        $('<h5>').addClass('card-title restaurant-card-title').text(restaurant.Name),
+                                        //記住id並隱藏
+                                        $('<p>').addClass('card-id').text(restaurant.PId).hide(),
+                                        $('<p>').addClass('card-text').text(restaurantDesc),
+                                        $('<p>').addClass('sale-price').html('$<span class="card-price">' + restaurant.Price + '</span>'),
+                                        $('<a>').attr('href', `${MVCurl}` + 'Ticket/TestTicket/' + restaurant.PId).attr('target', '_blank').addClass('btn btn-primary').css('margin-right', '20px').text('瀏覽票券'),
+                                        $('<button>').attr('data-restaurantcard-index', i).addClass('restaurant-btn-save btn btn-secondary').text('選擇')
+                                    )
+                                )
+                            );
+                            $('#restaurant-card-create').append(newCard);
+                        }
+
+                        //建立restaurant page
+                        var RestaurantPreviousPage = `
+                                                                <li class="page-item restaurant-page-item">
+                                                                    <a class="page-link restaurant-page-link" href="javascript:void(0)">上一頁</a>
+                                                                </li>`;
+                        $('#restaurant-page-create').append(RestaurantPreviousPage);
+                        var restaurant_quotient = JSON.parse(data)[0].length / 3;
+                        var restaurant_remainder = JSON.parse(data)[0].length % 3;
+                        var RestaurantRoundedValue = restaurant_quotient;
+                        if (restaurant_remainder > 0) {
+                            restaurant_quotient += 1;
+                            RestaurantRoundedValue = Math.floor(restaurant_quotient);
+                        }
+                        for (var i = 1; i <= RestaurantRoundedValue; i++) {
+                            var liClass = (i === 1) ? 'page-item restaurant-page-item active' : 'page-item restaurant-page-item';
+                            var liElement = $('<li>').addClass(liClass);
+                            var aElement = $('<a>').addClass('page-link restaurant-page-link').attr('href', 'javascript:void(0)').text(i);
+
+                            liElement.append(aElement);
+                            $('#restaurant-page-create').append(liElement);
+                        }
+                        var RestaurantNextPage = `
+                                                                <li class="page-item restaurant-page-item">
+                                                                    <a class="page-link restaurant-page-link" href="javascript:void(0)">下一頁</a>
+                                                                </li>`;
+                        $('#restaurant-page-create').append(RestaurantNextPage);
+
+                        pagination(".restaurant-card", ".restaurant-page-link", ".restaurant-page-item");
+                        handlePageClick(".restaurant-page-item", ".restaurant-page-link");
+
+                        // 餐廳
+                        handleTicketSelection(
+                            ".restaurant-btn-save",
+                            "restaurant-ticket-card",
+                            "restaurant-search-function",
+                            "#selected-restaurant-ticket-name",
+                            "#selected-restaurant-ticket",
+                            ".restaurant-ticket-price",
+                            "#restaurant-selected-image",
+                            "restaurant-selected-page",
+                            "New-section-restaurant",
+                            "#selected-restaurant-id"
+                        );
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('HTTP status code:', jqXHR.status);
+                    console.log('HTTP status text:', jqXHR.statusText);
+                    console.log('Error message:', errorThrown);
+                    $('#result').text('Error: ' + errorThrown);
+                }
+            });
+        });
+
+        //1. 按下套票按鈕時將餐廳飯店票券以及套票價格顯示出來，並隱藏該按鈕
+        document
+            .getElementById("packageticketbutton")
+            .addEventListener("click", function () {
+                // 當按下按鈕時，顯示以下三個元素
+                document.getElementById("hotelpage").style.display = "block";
+                document.getElementById("restaurantpage").style.display = "block";
+                document.getElementById("packageticketprice").style.display = "block";
+
+                // 然後隱藏按鈕本身
+                this.style.display = "none";
+            });
+
+        //2. 套票數量的增減功能
+        let addButton = document.getElementById("addBtn");
+        let subtractButton = document.getElementById("subtractBtn");
+        let numberSpan = document.getElementById("MainTicketQuantity");
+
+        // 為"增加"按鈕添加點擊事件處理器
+        addButton.addEventListener("click", function () {
+            // 獲取當前數字並將其增加1
+            let currentNumber = parseInt(numberSpan.textContent);
+            numberSpan.textContent = currentNumber + 1;
+            calculateTotalPrice();
+        });
+
+        // 為"減少"按鈕添加點擊事件處理器
+        subtractButton.addEventListener("click", function () {
+            // 獲取當前數字並將其減少1，但不低於1
+            let currentNumber = parseInt(numberSpan.textContent);
+            if (currentNumber > 1) {
+                numberSpan.textContent = currentNumber - 1;
+                calculateTotalPrice();
+            }
+        });
+
+        //若不是活動票券就將 選擇套票的按鈕 隱藏
+        window.addEventListener('DOMContentLoaded', function () {
+            // 檢查 Model.isEventTicket 的值
+            if (@Model.isEventTicket == 0) {
+                // 將按鈕設定為隱藏
+                var button = document.getElementById('packageticketbutton');
+                button.style.display = 'none';
+            }
+        });
+
+        //餐廳 飯店票券點選頁數，藍色按鈕為當前的頁數
+        function handlePageClick(itemSelector, linkSelector) {
+            $(itemSelector).click(function (event) {
+                if (
+                    $(this).children(linkSelector).text() === "上一頁" ||
+                    $(this).children(linkSelector).text() === "下一頁"
+                ) {
+                    event.preventDefault();
+
+                    var currentIndex = $(itemSelector + ".active").index();
+
+                    if (
+                        $(this).children(linkSelector).text() === "上一頁" &&
+                        currentIndex > 1
+                    ) {
+                        $(itemSelector).removeClass("active");
+                        $(itemSelector)
+                            .eq(currentIndex - 1)
+                            .addClass("active");
+                    }
+
+                    if (
+                        $(this).children(linkSelector).text() === "下一頁" &&
+                        currentIndex < $(itemSelector).length - 2
+                    ) {
+                        $(itemSelector).removeClass("active");
+                        $(itemSelector)
+                            .eq(currentIndex + 1)
+                            .addClass("active");
+                    }
+                } else {
+                    $(itemSelector).removeClass("active");
+                    $(this).addClass("active");
+                }
+            });
+        }
+
+        //餐廳 票券 每頁最多只顯示3張卡片，並根據之後頁數顯示之後的卡片
+        function pagination(cardClass, linkClass, pageItemClass) {
+            var currentPage = 1; // 儲存目前的頁碼
+
+            // 先將所有卡片藏起來
+            $(cardClass).hide();
+
+            // 然後只顯示前三個卡片
+            $(cardClass).slice(0, 3).show();
+
+            $(linkClass).click(function (e) {
+                e.preventDefault();
+
+                // 判斷點擊的是哪個按鈕
+                if ($(this).text() == "上一頁") {
+                    if (currentPage > 1) {
+                        // 避免頁碼變為負數
+                        currentPage--;
+                    }
+                } else if ($(this).text() == "下一頁") {
+                    if (currentPage < $(pageItemClass).length - 2) {
+                        // 避免頁碼超出最大值
+                        currentPage++;
+                    }
+                } else {
+                    currentPage = parseInt($(this).text()); // 更新頁碼
+                }
+
+                // 計算應該顯示哪些卡片
+                var start = (currentPage - 1) * 3;
+                var end = start + 3;
+
+                // 隱藏所有卡片並顯示該頁的卡片
+                $(cardClass).hide().slice(start, end).show();
+            });
+        }
+
+        //餐廳、飯店票券選取並隱藏原本畫面
+        function handleTicketSelection(
+            btnSelector,
+            ticketCardId,
+            searchFunctionId,
+            selectedTicketNameId,
+            selectedTicketDesc,
+            ticketPriceClass,
+            selectedImageId,
+            selectedPageId,
+            moveSection,
+            selectedTicketId
+        ) {
+            $(btnSelector).on("click", function () {
+                document.getElementById(ticketCardId).style.display = "none";
+                document.getElementById(searchFunctionId).style.display = "none";
+
+                var card = $(this).closest(".card");
+                var Name = card.find(".card-title").text();
+
+                var Id = card.find(".card-id").text();
+
+                var describe = card.find(".card-text").text();
+                var Price = card.find(".card-price").text();
+                var imageUrl = card.find(".card-img-top").attr("src");
+
+                $(selectedTicketNameId).text(Name);
+                $(selectedTicketId).text(Id);
+                $(selectedTicketDesc).text(describe);
+                $(ticketPriceClass).text(Price);
+                $(selectedImageId).attr("src", imageUrl);
+                document.getElementById(selectedPageId).style.display = "block";
+                document
+                    .getElementById(moveSection)
+                    .scrollIntoView({ behavior: "smooth" });
+
+                //計算套票價格
+                calculatePackagePrice();
+                calculateTotalPrice();
+            });
+        }
+
+        // 飯店
+        handleTicketSelection(
+            ".hotel-btn-save",
+            "hotel-ticket-card",
+            "hotel-search-function",
+            "#selected-hotel-ticket-name",
+            "#selected-hotel-ticket",
+            ".hotel-ticket-price",
+            "#hotel-selected-image",
+            "hotel-selected-page",
+            "New-section-hotel",
+            "#selected-hotel-id"
+        );
+
+        // 餐廳
+        handleTicketSelection(
+            ".restaurant-btn-save",
+            "restaurant-ticket-card",
+            "restaurant-search-function",
+            "#selected-restaurant-ticket-name",
+            "#selected-restaurant-ticket",
+            ".restaurant-ticket-price",
+            "#restaurant-selected-image",
+            "restaurant-selected-page",
+            "New-section-restaurant",
+            "#selected-restaurant-id"
+        );
+
+        // 餐廳、飯店從 已選票券 回到 選擇票券
+        function reselectTicket(
+            ticketId,
+            cardId,
+            functionId,
+            pageId,
+            moveSection,
+            selectedTicketName,
+            selectedTicketId,
+            selectedTicketDesc,
+            selectedTicketPrice
+        ) {
+            $(ticketId).on("click", function () {
+                document.getElementById(cardId).style.display = "block";
+                document.getElementById(functionId).style.display = "block";
+                document.getElementById(pageId).style.display = "none";
+                document
+                    .getElementById(moveSection)
+                    .scrollIntoView({ behavior: "smooth" });
+
+                // 清空以選票券的內容(空字串)
+                $(selectedTicketName).text("");
+                $(selectedTicketId).text("");
+                $(selectedTicketDesc).text("");
+
+                //價格變為0
+                $(selectedTicketPrice).text("0");
+
+                calculatePackagePrice();
+                calculateTotalPrice();
+            });
+        }
+
+        // 飯店
+        reselectTicket(
+            "#reselect-hotel-ticket",
+            "hotel-ticket-card",
+            "hotel-search-function",
+            "hotel-selected-page",
+            "New-section-hotel",
+            "#selected-hotel-ticket-name",
+            "#selected-hotel-id",
+            "#selected-hotel-ticket",
+            ".hotel-ticket-price"
+        );
+
+        // 餐廳
+        reselectTicket(
+            "#reselect-restaurant-ticket",
+            "restaurant-ticket-card",
+            "restaurant-search-function",
+            "restaurant-selected-page",
+            "New-section-restaurant",
+            "#selected-restaurant-ticket-name",
+            "#selected-restaurant-id",
+            "#selected-restaurant-ticket",
+            ".restaurant-ticket-price"
+        );
+
+        //計算套票價格
+        function calculatePackagePrice() {
+            // 先取得這三個span標籤的值
+            var hotelPrice = parseFloat($(".hotel-ticket-price").text());
+            var restaurantPrice = parseFloat($(".restaurant-ticket-price").text());
+            var mainPrice = parseFloat($(".main-ticket-price").text());
+
+            //有無按下 "欲訂購套票請按此" 按鈕
+            if (isPackageTicket == 0) {
+                $(".package-ticket-price").text(mainPrice);
+            }
+            else if (isPackageTicket == 1) {
+                // 將這三個值加總 並 打九折 再 無條件進位
+                var totalPrice = Math.ceil((hotelPrice + restaurantPrice + mainPrice) * 0.9);
+                // 替換package-ticket-price裡面的值
+                $(".package-ticket-price").text(totalPrice);
+            }
+        }
+
+        //計算價格總和
+        function calculateTotalPrice() {
+            // 先取得這兩個span標籤的值
+            var packagePrice = parseFloat($(".package-ticket-price").text());
+            var mainQuantity = parseFloat($("#MainTicketQuantity").text());
+
+            // 將這兩個值相乘
+            var totalPrice = packagePrice * mainQuantity;
+
+            // 替換total-price裡面的值
+            $(".total-price").text(totalPrice);
+        }
+
+        //加入購物車
+        $("#AddToCart").click(function () {
+
+            var mainTicketId = $("#main-ticket-id").text().trim();
+            var selectedHotelId = $("#selected-hotel-id").text().trim();
+            var selectedRestaurantId = $("#selected-restaurant-id").text().trim();
+            var mainTicketQuantity = $("#MainTicketQuantity").text().trim();
+            var totalPrice = $(".total-price").text().trim();
+            var type;
+            if (selectedHotelId !== "" && selectedRestaurantId !== "") {
+                type = 1;
+            } else {
+                type = 0;
+            }
+
+            if (isPackageTicket == 1 && selectedHotelId == "" && selectedRestaurantId == "") {
+                alert("請選擇飯店與餐廳票券")
+            }
+            else if (isPackageTicket == 1 && selectedHotelId !== "" && selectedRestaurantId == "") {
+                alert("請選擇餐廳票券")
+            }
+            else if (isPackageTicket == 1 && selectedHotelId == "" && selectedRestaurantId !== "") {
+                alert("請選擇飯店票券")
+            }
+            else {
+                const datas = {
+                    Type: type,
+                    Count: mainTicketQuantity,
+                    TotalPrice: totalPrice,
+                    MainPId: mainTicketId,
+                    Pid1: mainTicketId,
+                    Pid2: selectedHotelId,
+                    Pid3: selectedRestaurantId
+                }
+
+                location.href = `${MVCurl}Cart/AddToCart?datas=${JSON.stringify(datas)}`
+
+                console.log("Main Ticket ID: ", mainTicketId);
+                console.log("Selected Hotel ID: ", selectedHotelId);
+                console.log("Selected Restaurant ID: ", selectedRestaurantId);
+                console.log("Main Ticket Quantity: ", mainTicketQuantity);
+                console.log("Total Price: ", totalPrice);
+                console.log("Type: ", type);
+            }
+
+            //console.log(isPackageTicket);
+        });
+
+        //直接結帳
+        $("#CheckBill").click(function () {
+
+            var mainTicketId = $("#main-ticket-id").text().trim();
+            var selectedHotelId = $("#selected-hotel-id").text().trim();
+            var selectedRestaurantId = $("#selected-restaurant-id").text().trim();
+            var mainTicketQuantity = $("#MainTicketQuantity").text().trim();
+            var totalPrice = $(".total-price").text().trim();
+            var type;
+            if (selectedHotelId !== "" && selectedRestaurantId !== "") {
+                type = 1;
+            } else {
+                type = 0;
+            }
+
+            if (isPackageTicket == 1 && selectedHotelId == "" && selectedRestaurantId == "") {
+                alert("請選擇飯店與餐廳票券")
+            }
+            else if (isPackageTicket == 1 && selectedHotelId !== "" && selectedRestaurantId == "") {
+                alert("請選擇餐廳票券")
+            }
+            else if (isPackageTicket == 1 && selectedHotelId == "" && selectedRestaurantId !== "") {
+                alert("請選擇飯店票券")
+            }
+            else {
+                //const datas = {
+                //    type: type,
+                //    count: mainTicketQuantity,
+                //    totalprice: totalPrice,
+                //    mainPId: mainTicketId,
+                //    Pid1: mainTicketId,
+                //    Pid2: selectedHotelId,
+                //    Pid3: selectedRestaurantId
+                //}
+
+                ////下方為更改網址的程式碼
+                //location.href = `${MVCurl}/Cart?datas=${datas}`
+
+                console.log("Main Ticket ID: ", mainTicketId);
+                console.log("Selected Hotel ID: ", selectedHotelId);
+                console.log("Selected Restaurant ID: ", selectedRestaurantId);
+                console.log("Main Ticket Quantity: ", mainTicketQuantity);
+                console.log("Total Price: ", totalPrice);
+                console.log("Type: ", type);
+            }
+
+            //console.log(isPackageTicket);
+        });
+
+        //自製套票
+        function updateElements(hotelImg, hotelName, hotelId, hotelTicket, hotelPrice,
+            restaurantImg, restaurantName, restaurantId, restaurantTicket, restaurantPrice) {
+            // 更新酒店資訊
+            $("#hotel-selected-image").attr("src", hotelImg);
+            $("#selected-hotel-ticket-name").text(hotelName);
+            $("#selected-hotel-id").text(hotelId);
+            $("#selected-hotel-ticket").text(hotelTicket);
+            $(".hotel-ticket-price").text(hotelPrice);
+
+            // 更新餐廳資訊
+            $("#restaurant-selected-image").attr("src", restaurantImg);
+            $("#selected-restaurant-ticket-name").text(restaurantName);
+            $("#selected-restaurant-id").text(restaurantId);
+            $("#selected-restaurant-ticket").text(restaurantTicket);
+            $(".restaurant-ticket-price").text(restaurantPrice);
+
+            // 顯示這五個元素
+            $("#hotelpage").css("display", "block");
+            $("#restaurantpage").css("display", "block");
+            $("#hotel-selected-page").css("display", "block");
+            $("#restaurant-selected-page").css("display", "block");
+            $("#packageticketprice").css("display", "block");
+
+            // 隱藏這四個元素
+            $("#reselect-restaurant-ticket").hide();
+            $("#reselect-hotel-ticket").hide();
+            $("#hotel-search-function").hide();
+            $("#restaurant-search-function").hide();
+
+            isPackageTicket = 1
+            calculatePackagePrice();
+            calculateTotalPrice();
+        }
+
+    </script>
+}
+
+
+
+    @if (Model.isPackgeTicket == 1)
+    {
+        System.Diagnostics.Debug.WriteLine($"在這{Model.hotel.Ticket}");
+        <script>
+            window.onload = function () {               
+
+                var hotelImg = "/images/"+"@Model.hotel.Image";
+                var hotelName = unescape((`@Model.hotel.Name`).toString().replace(/&#x([a-zA-Z0-9]+);{0,1}/g, (substring, $1) => { return "%u" + $1 }))
+                var hotelId = "@Model.hotel.PId";
+                var hotelTicket = unescape((`@Model.hotel.Desc`).toString().replace(/&#x([a-zA-Z0-9]+);{0,1}/g, (substring, $1) => { return "%u" + $1 }))
+                var hotelPrice = "@Model.hotel.Price";
+                var restaurantImg = "/images/" + "@Model.restaurant.Image";
+                var restaurantName = unescape((`@Model.restaurant.Name`).toString().replace(/&#x([a-zA-Z0-9]+);{0,1}/g, (substring, $1) => { return "%u" + $1 }))
+                var restaurantId = "@Model.restaurant.PId";
+                var restaurantTicket = unescape((`@Model.restaurant.Desc`).toString().replace(/&#x([a-zA-Z0-9]+);{0,1}/g, (substring, $1) => { return "%u" + $1 }))
+                var restaurantPrice = "@Model.restaurant.Price";
+
+@*            updateElements(hotelImg, hotelName, hotelId, hotelTicket, hotelPrice,
+                restaurantImg, restaurantName, restaurantId, restaurantTicket, restaurantPrice);
+
+              @*$("#hotel-selected-page").css("display", "block");
+                $("#restaurant-selected-page").css("display", "block");
+                $("#packageticketprice").css("display", "block");*@
+            }
+        </script>
+    }
+    else
+    {
+        <script>
+            window.onload = function () {
+                calculatePackagePrice();
+                calculateTotalPrice();
+            }
+        </script>
+    }
+}
